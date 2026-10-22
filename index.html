@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" class="h-full bg-slate-50">
+<html lang="vi" class="h-full bg-slate-100">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,19 +11,25 @@
             theme: {
                 extend: {
                     colors: {
-                        navy: {
-                            50: '#f0f4f8',
-                            100: '#d9e2ec',
-                            500: '#334e68',
-                            800: '#102a43',
-                            900: '#0b1b2b',
-                        },
-                        emerald: {
-                            50: '#ecfdf5',
-                            500: '#10b981',
-                            600: '#059669',
-                            700: '#047857',
+                        ios: {
+                            bg: '#f2f2f7',
+                            card: 'rgba(255, 255, 255, 0.82)',
+                            cardSolid: '#ffffff',
+                            blue: '#007aff',
+                            green: '#34c759',
+                            orange: '#ff9500',
+                            red: '#ff3b30',
+                            purple: '#af52de',
+                            teal: '#30b0c7',
+                            gray: '#8e8e93',
+                            lightGray: '#e5e5ea',
+                            dark: '#1c1c1e'
                         }
+                    },
+                    boxShadow: {
+                        'ios-sm': '0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02)',
+                        'ios-md': '0 8px 24px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04)',
+                        'ios-lg': '0 16px 32px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05)',
                     }
                 }
             }
@@ -33,162 +39,214 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Inter / SF Pro Styling -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Firebase App & Firestore SDKs -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #f2f2f7;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Glassmorphism iOS Style */
+        .glass-header {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        /* Smooth Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.3); }
+
+        /* Smooth View Fade-Dim-Zoom Animations */
+        .page-transition {
+            transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.35s cubic-bezier(0.32, 0.72, 0, 1), filter 0.35s ease;
+            will-change: transform, opacity, filter;
+        }
+
+        .view-hidden-left {
+            opacity: 0;
+            transform: scale(0.95);
+            filter: brightness(0.9) blur(2px);
+            pointer-events: none;
+            position: absolute;
+            width: 100%;
+        }
+
+        .view-active {
+            opacity: 1;
+            transform: scale(1);
+            filter: brightness(1) blur(0px);
+            position: relative;
+            width: 100%;
+        }
+
+        /* iOS Switch & Touch Interactions */
+        .ios-btn-active:active {
+            transform: scale(0.97);
+            opacity: 0.85;
+        }
     </style>
 </head>
-<body class="h-full text-slate-800 flex flex-col antialiased selection:bg-emerald-500 selection:text-white">
+<body class="h-full text-slate-900 flex flex-col antialiased selection:bg-ios-blue selection:text-white min-h-screen">
 
-    <!-- Top Navigation Bar -->
-    <header class="bg-navy-900 text-white shadow-md z-30 sticky top-0">
-        <div class="px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+    <!-- iOS Glass Header & Top Navigation Bar -->
+    <header class="glass-header sticky top-0 z-40 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="bg-emerald-500 p-2 rounded-lg text-white">
-                    <i class="fa-solid fa-boxes-stacked text-xl"></i>
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-ios-blue to-cyan-400 flex items-center justify-center text-white shadow-md shadow-ios-blue/20">
+                    <i class="fa-solid fa-boxes-stacked text-lg"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg leading-tight tracking-wide">QUẢN LÝ KHO KĨ THUẬT <span class="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full uppercase ml-1">SHP Edition</span></h1>
-                    <p class="text-xs text-slate-300">Đồng bộ đám mây thời gian thực • Realtime Cloud Firestore</p>
+                    <h1 class="font-bold text-base sm:text-lg tracking-tight text-slate-900 leading-tight flex items-center gap-2">
+                        QUẢN LÝ KHO KĨ THUẬT
+                        <span class="text-[10px] font-semibold bg-ios-blue/10 text-ios-blue px-2 py-0.5 rounded-full border border-ios-blue/20">SHP Edition</span>
+                    </h1>
+                    <p class="text-[11px] text-slate-500 font-medium">Đồng bộ Cloud Firestore • iOS Interface</p>
                 </div>
             </div>
 
-            <!-- Header Quick Stats & Cloud Badge -->
-            <div class="flex items-center space-x-4 text-sm">
-                <div id="cloud-status-badge" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-semibold">
-                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-                    <span>Đang kết nối Cloud...</span>
+            <!-- Header Cloud Status & Quick Stats -->
+            <div class="flex items-center space-x-3 text-xs">
+                <div id="cloud-status-badge" class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-ios-orange/10 text-ios-orange border border-ios-orange/20 font-semibold backdrop-blur-md">
+                    <span class="w-2 h-2 rounded-full bg-ios-orange animate-ping"></span>
+                    <span>Đang kết nối...</span>
                 </div>
-                <div class="hidden md:flex items-center space-x-6">
-                    <div class="flex items-center space-x-2 bg-navy-800/80 px-3 py-1.5 rounded-lg border border-navy-500/30">
-                        <i class="fa-solid fa-cube text-emerald-400"></i>
-                        <span class="text-slate-300">Tổng danh mục:</span>
-                        <span class="font-bold text-white" id="header-total-items">0</span>
+                <div class="hidden md:flex items-center space-x-4 bg-slate-200/50 p-1 rounded-2xl border border-slate-300/40">
+                    <div class="flex items-center space-x-1.5 px-3 py-1">
+                        <i class="fa-solid fa-cube text-ios-blue"></i>
+                        <span class="text-slate-500 font-medium">Danh mục:</span>
+                        <span class="font-bold text-slate-800" id="header-total-items">0</span>
                     </div>
-                    <div class="flex items-center space-x-2 bg-navy-800/80 px-3 py-1.5 rounded-lg border border-navy-500/30">
-                        <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
-                        <span class="text-slate-300">Cảnh báo kho:</span>
-                        <span class="font-bold text-amber-400" id="header-low-stock">0</span>
+                    <div class="flex items-center space-x-1.5 px-3 py-1 bg-white rounded-xl shadow-ios-sm">
+                        <i class="fa-solid fa-triangle-exclamation text-ios-orange"></i>
+                        <span class="text-slate-500 font-medium">Cảnh báo:</span>
+                        <span class="font-bold text-ios-orange" id="header-low-stock">0</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Navigation Tabs -->
-        <nav class="bg-navy-800 px-4 sm:px-6 lg:px-8 flex space-x-1 border-t border-navy-500/20 overflow-x-auto custom-scrollbar">
-            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-tab text-emerald-400 border-b-2 border-emerald-400 font-medium px-4 py-2.5 text-sm flex items-center space-x-2 whitespace-nowrap transition-colors">
-                <i class="fa-solid fa-chart-pie"></i>
-                <span>Tổng quan</span>
-            </button>
-            <button onclick="switchTab('inventory')" id="tab-inventory" class="nav-tab text-slate-300 hover:text-white font-medium px-4 py-2.5 text-sm flex items-center space-x-2 whitespace-nowrap transition-colors border-b-2 border-transparent">
-                <i class="fa-solid fa-list-check"></i>
-                <span>Danh mục Vật tư</span>
-            </button>
-            <button onclick="switchTab('import')" id="tab-import" class="nav-tab text-slate-300 hover:text-white font-medium px-4 py-2.5 text-sm flex items-center space-x-2 whitespace-nowrap transition-colors border-b-2 border-transparent">
-                <i class="fa-solid fa-file-import text-emerald-400"></i>
-                <span>Nhập kho</span>
-            </button>
-            <button onclick="switchTab('export')" id="tab-export" class="nav-tab text-slate-300 hover:text-white font-medium px-4 py-2.5 text-sm flex items-center space-x-2 whitespace-nowrap transition-colors border-b-2 border-transparent">
-                <i class="fa-solid fa-file-export text-sky-400"></i>
-                <span>Xuất kho</span>
-            </button>
-            <button onclick="switchTab('history')" id="tab-history" class="nav-tab text-slate-300 hover:text-white font-medium px-4 py-2.5 text-sm flex items-center space-x-2 whitespace-nowrap transition-colors border-b-2 border-transparent">
-                <i class="fa-solid fa-clock-rotate-left"></i>
-                <span>Lịch sử Giao dịch</span>
-            </button>
-            <button onclick="switchTab('trace')" id="tab-trace" class="nav-tab text-slate-300 hover:text-white font-medium px-4 py-2.5 text-sm flex items-center space-x-2 whitespace-nowrap transition-colors border-b-2 border-transparent">
-                <i class="fa-solid fa-magnifying-glass-chart text-amber-400"></i>
-                <span>Truy xuất</span>
-            </button>
-            <button onclick="switchTab('stocktake')" id="tab-stocktake" class="nav-tab text-slate-300 hover:text-white font-medium px-4 py-2.5 text-sm flex items-center space-x-2 whitespace-nowrap transition-colors border-b-2 border-transparent">
-                <i class="fa-solid fa-clipboard-check text-violet-400"></i>
-                <span>Kiểm kê</span>
-            </button>
-        </nav>
+        <!-- Segmented iOS Tab Bar Navigation -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-2">
+            <nav class="flex bg-slate-200/60 p-1 rounded-2xl overflow-x-auto custom-scrollbar space-x-1 backdrop-blur-md border border-slate-300/30">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-tab flex-1 min-w-[100px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active">
+                    <i class="fa-solid fa-chart-pie text-sm"></i>
+                    <span>Tổng quan</span>
+                </button>
+                <button onclick="switchTab('inventory')" id="tab-inventory" class="nav-tab flex-1 min-w-[100px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active">
+                    <i class="fa-solid fa-list-check text-sm"></i>
+                    <span>Vật tư</span>
+                </button>
+                <button onclick="switchTab('import')" id="tab-import" class="nav-tab flex-1 min-w-[100px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active">
+                    <i class="fa-solid fa-file-import text-sm"></i>
+                    <span>Nhập kho</span>
+                </button>
+                <button onclick="switchTab('export')" id="tab-export" class="nav-tab flex-1 min-w-[100px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active">
+                    <i class="fa-solid fa-file-export text-sm"></i>
+                    <span>Xuất kho</span>
+                </button>
+                <button onclick="switchTab('stocktake')" id="tab-stocktake" class="nav-tab flex-1 min-w-[100px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active">
+                    <i class="fa-solid fa-clipboard-check text-sm"></i>
+                    <span>Kiểm kê</span>
+                </button>
+                <button onclick="switchTab('history')" id="tab-history" class="nav-tab flex-1 min-w-[100px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active">
+                    <i class="fa-solid fa-clock-rotate-left text-sm"></i>
+                    <span>Lịch sử</span>
+                </button>
+                <button onclick="switchTab('trace')" id="tab-trace" class="nav-tab flex-1 min-w-[100px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active">
+                    <i class="fa-solid fa-magnifying-glass-chart text-sm"></i>
+                    <span>Truy xuất</span>
+                </button>
+            </nav>
+        </div>
     </header>
 
-    <!-- Main Content Container -->
-    <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+    <!-- Main Dynamic Content Views Container -->
+    <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto relative overflow-hidden">
 
-        <!-- Toast Notification Banner -->
-        <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+        <!-- Toast Notifications Floating Stack -->
+        <div id="toast-container" class="fixed top-20 right-5 z-50 space-y-2 pointer-events-none"></div>
 
         <!-- 1. DASHBOARD VIEW -->
-        <section id="view-dashboard" class="view-content space-y-6">
-            <!-- Summary Cards Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                <!-- Total Items Card -->
-                <div id="card-total" onclick="selectDashboardCard('all')" class="dashboard-card bg-white p-5 rounded-2xl shadow-sm border-2 border-emerald-500 cursor-pointer hover:shadow-md transition-all flex items-center justify-between">
+        <section id="view-dashboard" class="page-transition view-active space-y-6">
+            <!-- iOS Style Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div id="card-total" onclick="selectDashboardCard('all')" class="glass-card p-5 rounded-3xl shadow-ios-sm cursor-pointer hover:shadow-ios-md border border-white/80 transition-all ios-btn-active flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Tổng loại vật tư</p>
-                        <h3 class="text-2xl font-bold text-navy-900" id="stat-total-types">0</h3>
-                        <p class="text-xs text-slate-500 mt-1"><span class="text-emerald-600 font-medium" id="stat-total-qty">0</span> sản phẩm tồn kho</p>
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Tổng loại vật tư</p>
+                        <h3 class="text-2xl font-bold text-slate-900" id="stat-total-types">0</h3>
+                        <p class="text-xs text-slate-500 mt-1"><span class="text-ios-blue font-bold" id="stat-total-qty">0</span> món tồn kho</p>
                     </div>
-                    <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
+                    <div class="w-12 h-12 bg-ios-blue/10 rounded-2xl flex items-center justify-center text-ios-blue">
                         <i class="fa-solid fa-boxes-stacked text-xl"></i>
                     </div>
                 </div>
 
-                <!-- Total Valuation Card -->
-                <div id="card-valuation" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+                <div id="card-valuation" class="glass-card p-5 rounded-3xl shadow-ios-sm border border-white/80 flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Tổng giá trị kho</p>
-                        <h3 class="text-2xl font-bold text-navy-900" id="stat-total-value">0 ₫</h3>
-                        <p class="text-xs text-slate-500 mt-1">Tính theo đơn giá nhập</p>
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Giá trị kho ước tính</p>
+                        <h3 class="text-2xl font-bold text-slate-900" id="stat-total-value">0 ₫</h3>
+                        <p class="text-xs text-slate-500 mt-1">Đơn giá nhập trung bình</p>
                     </div>
-                    <div class="w-12 h-12 bg-sky-50 rounded-xl flex items-center justify-center text-sky-600">
+                    <div class="w-12 h-12 bg-ios-purple/10 rounded-2xl flex items-center justify-center text-ios-purple">
                         <i class="fa-solid fa-vault text-xl"></i>
                     </div>
                 </div>
 
-                <!-- Low Stock Warning Card (Clickable) -->
-                <div onclick="selectDashboardCard('low')" id="card-low" class="dashboard-card bg-white p-5 rounded-2xl shadow-sm border-2 border-transparent hover:border-slate-300 cursor-pointer hover:shadow-md transition-all flex items-center justify-between">
+                <div id="card-low" onclick="selectDashboardCard('low')" class="glass-card p-5 rounded-3xl shadow-ios-sm cursor-pointer hover:shadow-ios-md border border-white/80 transition-all ios-btn-active flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Cảnh báo sắp hết</p>
-                        <h3 class="text-2xl font-bold text-amber-600" id="stat-low-stock">0</h3>
-                        <p class="text-xs text-amber-600 font-medium mt-1">Dưới định mức tối thiểu</p>
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Cảnh báo sắp hết</p>
+                        <h3 class="text-2xl font-bold text-ios-orange" id="stat-low-stock">0</h3>
+                        <p class="text-xs text-ios-orange font-medium mt-1">Dưới ngưỡng tối thiểu</p>
                     </div>
-                    <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
+                    <div class="w-12 h-12 bg-ios-orange/10 rounded-2xl flex items-center justify-center text-ios-orange">
                         <i class="fa-solid fa-triangle-exclamation text-xl"></i>
                     </div>
                 </div>
 
-                <!-- Out of Stock Card (Clickable) -->
-                <div onclick="selectDashboardCard('out')" id="card-out" class="dashboard-card bg-white p-5 rounded-2xl shadow-sm border-2 border-transparent hover:border-slate-300 cursor-pointer hover:shadow-md transition-all flex items-center justify-between">
+                <div id="card-out" onclick="selectDashboardCard('out')" class="glass-card p-5 rounded-3xl shadow-ios-sm cursor-pointer hover:shadow-ios-md border border-white/80 transition-all ios-btn-active flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Đã hết hàng</p>
-                        <h3 class="text-2xl font-bold text-rose-600" id="stat-out-of-stock">0</h3>
-                        <p class="text-xs text-rose-500 font-medium mt-1">Cần bổ sung gấp</p>
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Đã hết hàng</p>
+                        <h3 class="text-2xl font-bold text-ios-red" id="stat-out-of-stock">0</h3>
+                        <p class="text-xs text-ios-red font-medium mt-1">Cần bổ sung ngay</p>
                     </div>
-                    <div class="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center text-rose-600">
+                    <div class="w-12 h-12 bg-ios-red/10 rounded-2xl flex items-center justify-center text-ios-red">
                         <i class="fa-solid fa-circle-xmark text-xl"></i>
                     </div>
                 </div>
             </div>
 
-            <!-- Dashboard Details Table & Recent Stream -->
+            <!-- Dashboard Table & Stream -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Filtered Detail Table -->
-                <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col">
-                    <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <div class="lg:col-span-2 glass-card rounded-3xl shadow-ios-sm border border-white/80 overflow-hidden flex flex-col">
+                    <div class="p-4 sm:p-5 border-b border-slate-200/50 flex items-center justify-between bg-white/40">
                         <div class="flex items-center space-x-2">
-                            <i id="dashboard-card-icon" class="fa-solid fa-list-check text-emerald-600"></i>
-                            <h3 id="dashboard-card-title" class="font-bold text-navy-900">Danh sách tất cả loại vật tư</h3>
+                            <i id="dashboard-card-icon" class="fa-solid fa-list-check text-ios-blue"></i>
+                            <h3 id="dashboard-card-title" class="font-bold text-slate-900 text-sm sm:text-base">Danh sách vật tư kỹ thuật</h3>
                         </div>
-                        <button onclick="switchTab('inventory')" class="text-xs font-semibold text-emerald-600 hover:text-emerald-700">Xem toàn bộ <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                        <button onclick="switchTab('inventory')" class="text-xs font-semibold text-ios-blue hover:underline flex items-center gap-1">
+                            Xem tất cả <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        </button>
                     </div>
                     <div class="overflow-x-auto flex-1 max-h-[420px] custom-scrollbar">
                         <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase font-semibold border-b border-slate-100 sticky top-0 z-10">
+                            <thead class="bg-slate-100/70 text-slate-500 text-[11px] uppercase font-bold sticky top-0 z-10 border-b border-slate-200/40 backdrop-blur-md">
                                 <tr>
                                     <th class="px-4 py-3">Mã VT</th>
                                     <th class="px-4 py-3">Tên vật tư</th>
@@ -197,37 +255,37 @@
                                     <th class="px-4 py-3 text-right">Thao tác</th>
                                 </tr>
                             </thead>
-                            <tbody id="dashboard-low-stock-body" class="divide-y divide-slate-100">
-                                <!-- JS Populated -->
+                            <tbody id="dashboard-low-stock-body" class="divide-y divide-slate-200/40">
+                                <!-- JS Dynamic Injection -->
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- Recent Activities Stream -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 flex flex-col">
-                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-                        <h3 class="font-bold text-navy-900 flex items-center space-x-2">
-                            <i class="fa-solid fa-clock-rotate-left text-emerald-600"></i>
+                <!-- Recent Activities iOS List -->
+                <div class="glass-card rounded-3xl shadow-ios-sm border border-white/80 p-5 flex flex-col">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-200/50">
+                        <h3 class="font-bold text-slate-900 text-sm sm:text-base flex items-center space-x-2">
+                            <i class="fa-solid fa-clock-rotate-left text-ios-blue"></i>
                             <span>Giao dịch mới nhất</span>
                         </h3>
                     </div>
-                    <div id="dashboard-recent-activities" class="space-y-4 flex-1 overflow-y-auto max-h-[350px] custom-scrollbar pr-1">
-                        <!-- JS Populated -->
+                    <div id="dashboard-recent-activities" class="space-y-3.5 flex-1 overflow-y-auto max-h-[360px] custom-scrollbar pr-1">
+                        <!-- JS Dynamic Injection -->
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- 2. INVENTORY MANAGEMENT VIEW -->
-        <section id="view-inventory" class="view-content hidden space-y-5">
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col md:flex-row gap-4 items-center justify-between">
-                <div class="flex flex-1 flex-col sm:flex-row gap-3 w-full md:w-auto">
+        <section id="view-inventory" class="page-transition view-hidden-left space-y-5">
+            <div class="glass-card p-4 rounded-3xl shadow-ios-sm border border-white/80 flex flex-col md:flex-row gap-3 items-center justify-between">
+                <div class="flex flex-1 flex-col sm:flex-row gap-2.5 w-full md:w-auto">
                     <div class="relative flex-1">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="text" id="inventory-search" oninput="renderInventoryTable()" placeholder="Tìm kiếm theo mã, tên vật tư..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="inventory-search" oninput="renderInventoryTable()" placeholder="Tìm kiếm tên, mã vật tư..." class="w-full pl-9 pr-4 py-2 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue focus:bg-white outline-none transition-all">
                     </div>
-                    <select id="inventory-filter-category" onchange="renderInventoryTable()" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-medium">
+                    <select id="inventory-filter-category" onchange="renderInventoryTable()" class="bg-slate-100/80 border-0 rounded-2xl px-3 py-2 text-xs font-semibold text-slate-700 focus:ring-2 focus:ring-ios-blue focus:bg-white outline-none transition-all">
                         <option value="">Tất cả danh mục</option>
                         <option value="ME">Kỹ thuật ME</option>
                         <option value="BM">Tòa nhà BM</option>
@@ -235,7 +293,7 @@
                         <option value="ROOM">Phòng khách ROOM</option>
                         <option value="OTHER">Khác OTHER</option>
                     </select>
-                    <select id="inventory-filter-status" onchange="renderInventoryTable()" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-medium">
+                    <select id="inventory-filter-status" onchange="renderInventoryTable()" class="bg-slate-100/80 border-0 rounded-2xl px-3 py-2 text-xs font-semibold text-slate-700 focus:ring-2 focus:ring-ios-blue focus:bg-white outline-none transition-all">
                         <option value="">Tất cả trạng thái</option>
                         <option value="SAFE">An toàn</option>
                         <option value="LOW">Sắp hết</option>
@@ -244,35 +302,34 @@
                 </div>
 
                 <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
-                    <button onclick="exportToCSV('inventory')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-3.5 py-2 rounded-xl text-sm transition-colors flex items-center space-x-2">
+                    <button onclick="exportToCSV('inventory')" class="bg-slate-200/70 hover:bg-slate-300/70 text-slate-700 font-semibold px-3.5 py-2 rounded-2xl text-xs transition-colors flex items-center space-x-1.5 ios-btn-active">
                         <i class="fa-solid fa-file-csv text-slate-500"></i>
                         <span>Xuất CSV</span>
                     </button>
-                    <button onclick="openItemModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-xl text-sm transition-colors flex items-center justify-center space-x-2 shadow-sm shadow-emerald-200">
+                    <button onclick="openItemModal()" class="bg-ios-blue hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-2xl text-xs transition-all shadow-md shadow-ios-blue/20 flex items-center space-x-1.5 ios-btn-active">
                         <i class="fa-solid fa-plus"></i>
-                        <span>Thêm vật tư mới</span>
+                        <span>Thêm vật tư</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Inventory Table -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
-                <div class="overflow-x-auto">
+            <div class="glass-card rounded-3xl shadow-ios-sm border border-white/80 overflow-hidden">
+                <div class="overflow-x-auto max-h-[580px] custom-scrollbar">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold border-b border-slate-200">
+                        <thead class="bg-slate-100/80 text-slate-500 text-[11px] uppercase font-bold sticky top-0 z-10 border-b border-slate-200/50 backdrop-blur-md">
                             <tr>
                                 <th class="px-5 py-3.5">Mã VT</th>
                                 <th class="px-5 py-3.5">Tên vật tư</th>
                                 <th class="px-5 py-3.5">Danh mục</th>
                                 <th class="px-5 py-3.5 text-center">ĐVT</th>
-                                <th class="px-5 py-3.5 text-right">Số lượng tồn</th>
-                                <th class="px-5 py-3.5 text-right">Đơn giá nhập</th>
+                                <th class="px-5 py-3.5 text-right">Tồn kho</th>
+                                <th class="px-5 py-3.5 text-right">Đơn giá</th>
                                 <th class="px-5 py-3.5 text-center">Trạng thái</th>
                                 <th class="px-5 py-3.5 text-right">Thao tác</th>
                             </tr>
                         </thead>
-                        <tbody id="inventory-table-body" class="divide-y divide-slate-100">
-                            <!-- JS Populated -->
+                        <tbody id="inventory-table-body" class="divide-y divide-slate-200/40">
+                            <!-- JS Dynamic Injection -->
                         </tbody>
                     </table>
                 </div>
@@ -280,93 +337,90 @@
         </section>
 
         <!-- 3. IMPORT WAREHOUSE VIEW -->
-        <section id="view-import" class="view-content hidden">
+        <section id="view-import" class="page-transition view-hidden-left">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200/80 space-y-6">
-                    <div class="border-b border-slate-100 pb-4 flex items-center justify-between">
-                        <div>
-                            <h2 class="text-lg font-bold text-navy-900 flex items-center space-x-2">
-                                <i class="fa-solid fa-file-import text-emerald-600"></i>
-                                <span>Phiếu Nhập Kho Thủ Công</span>
-                            </h2>
-                            <p class="text-xs text-slate-500 mt-1">Cập nhật gia tăng số lượng tồn kho vật tư kỹ thuật</p>
-                        </div>
+                <div class="lg:col-span-2 glass-card p-6 sm:p-8 rounded-3xl shadow-ios-sm border border-white/80 space-y-6">
+                    <div class="border-b border-slate-200/50 pb-4">
+                        <h2 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                            <i class="fa-solid fa-file-import text-ios-green"></i>
+                            <span>Tạo Phiếu Nhập Kho</span>
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Thêm số lượng vật tư kỹ thuật vào hệ thống kho</p>
                     </div>
 
-                    <form id="form-import" onsubmit="handleImport(event)" class="space-y-5">
+                    <form id="form-import" onsubmit="handleImport(event)" class="space-y-4">
                         <div class="space-y-1.5 relative">
-                            <label class="block text-xs font-semibold uppercase text-slate-600">Chọn Vật tư / Tìm kiếm thông minh <span class="text-rose-500">*</span></label>
+                            <label class="block text-xs font-semibold text-slate-600">Chọn Vật tư <span class="text-ios-red">*</span></label>
                             <div class="relative">
-                                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                                <input type="text" id="import-search" oninput="searchSmart('import')" placeholder="Nhập tên hoặc mã vật tư..." autocomplete="off" required class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                <input type="text" id="import-search" oninput="searchSmart('import')" placeholder="Nhập tên hoặc mã vật tư..." autocomplete="off" required class="w-full pl-9 pr-8 py-2.5 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-green focus:bg-white outline-none transition-all">
                             </div>
                             <input type="hidden" id="import-selected-item-id" required>
-                            <div id="import-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-20 max-h-60 overflow-y-auto custom-scrollbar divide-y divide-slate-100"></div>
+                            <div id="import-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-2xl shadow-ios-lg z-30 max-h-56 overflow-y-auto custom-scrollbar divide-y divide-slate-100"></div>
                         </div>
 
-                        <div id="import-selected-badge" class="hidden p-3.5 bg-emerald-50/60 border border-emerald-200/80 rounded-xl flex items-center justify-between text-xs">
+                        <div id="import-selected-badge" class="hidden p-3.5 bg-ios-green/10 border border-ios-green/20 rounded-2xl flex items-center justify-between text-xs">
                             <div class="flex items-center space-x-3">
-                                <span id="import-badge-code" class="font-mono bg-emerald-200/60 text-emerald-900 font-bold px-2 py-0.5 rounded"></span>
+                                <span id="import-badge-code" class="font-mono bg-ios-green text-white font-bold px-2 py-0.5 rounded-lg"></span>
                                 <span id="import-badge-name" class="font-semibold text-slate-800"></span>
                             </div>
                             <div class="text-slate-600">
-                                Tồn hiện tại: <span id="import-badge-qty" class="font-bold text-emerald-700"></span>
+                                Tồn hiện tại: <span id="import-badge-qty" class="font-bold text-ios-green"></span>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
-                                <label class="block text-xs font-semibold uppercase text-slate-600">Số lượng nhập <span class="text-rose-500">*</span></label>
-                                <input type="number" id="import-qty" min="1" required placeholder="Nhập số lượng" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
+                                <label class="block text-xs font-semibold text-slate-600">Số lượng nhập <span class="text-ios-red">*</span></label>
+                                <input type="number" id="import-qty" min="1" required placeholder="Nhập số lượng" class="w-full px-3.5 py-2.5 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-green focus:bg-white outline-none">
                             </div>
                             <div class="space-y-1.5">
-                                <label class="block text-xs font-semibold uppercase text-slate-600">Đơn giá nhập (VNĐ)</label>
-                                <input type="number" id="import-price" min="0" placeholder="Để trống nếu giữ giá cũ" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
+                                <label class="block text-xs font-semibold text-slate-600">Đơn giá nhập (VNĐ)</label>
+                                <input type="number" id="import-price" min="0" placeholder="Để trống nếu giữ giá cũ" class="w-full px-3.5 py-2.5 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-green focus:bg-white outline-none">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
-                                <label class="block text-xs font-semibold uppercase text-slate-600">Nhà cung cấp / Nguồn nhập</label>
-                                <input type="text" id="import-supplier" placeholder="Công ty / Nhà cung cấp..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
+                                <label class="block text-xs font-semibold text-slate-600">Nhà cung cấp / Nguồn nhập</label>
+                                <input type="text" id="import-supplier" placeholder="Công ty / Cửa hàng..." class="w-full px-3.5 py-2.5 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-green focus:bg-white outline-none">
                             </div>
-                            <!-- Autocomplete Performer Field -->
                             <div class="space-y-1.5 relative">
-                                <label class="block text-xs font-semibold uppercase text-slate-600">Người thực hiện <span class="text-rose-500">*</span></label>
-                                <input type="text" id="import-performer" required placeholder="Gõ tên để tìm cán bộ..." autocomplete="off" onfocus="searchStaff('import-performer')" oninput="searchStaff('import-performer')" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
-                                <div id="import-performer-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-20 max-h-48 overflow-y-auto custom-scrollbar divide-y divide-slate-100"></div>
+                                <label class="block text-xs font-semibold text-slate-600">Người thực hiện <span class="text-ios-red">*</span></label>
+                                <input type="text" id="import-performer" required placeholder="Gõ tên cán bộ..." autocomplete="off" onfocus="searchStaff('import-performer')" oninput="searchStaff('import-performer')" class="w-full px-3.5 py-2.5 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-green focus:bg-white outline-none">
+                                <div id="import-performer-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-2xl shadow-ios-lg z-30 max-h-48 overflow-y-auto custom-scrollbar divide-y divide-slate-100"></div>
                             </div>
                         </div>
 
                         <div class="space-y-1.5">
-                            <label class="block text-xs font-semibold uppercase text-slate-600">Ghi chú</label>
-                            <textarea id="import-note" rows="2" placeholder="Nội dung ghi chú nhập kho..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none"></textarea>
+                            <label class="block text-xs font-semibold text-slate-600">Ghi chú</label>
+                            <textarea id="import-note" rows="2" placeholder="Ghi chú chi tiết..." class="w-full px-3.5 py-2.5 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-green focus:bg-white outline-none"></textarea>
                         </div>
 
-                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl text-sm transition-colors shadow-md shadow-emerald-200 flex items-center justify-center space-x-2">
+                        <button type="submit" class="w-full bg-ios-green hover:bg-green-600 text-white font-semibold py-3 rounded-2xl text-xs transition-all shadow-md shadow-ios-green/20 flex items-center justify-center space-x-2 ios-btn-active">
                             <i class="fa-solid fa-circle-check"></i>
                             <span>Xác Nhận Nhập Kho</span>
                         </button>
                     </form>
                 </div>
 
-                <!-- Excel Batch Import Panel -->
-                <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-between space-y-6">
-                    <div class="space-y-4">
-                        <h2 class="text-lg font-bold text-navy-900 flex items-center space-x-2 pb-3 border-b border-slate-100">
-                            <i class="fa-solid fa-file-excel text-emerald-600"></i>
+                <!-- Excel Batch Import iOS Card -->
+                <div class="glass-card p-6 sm:p-8 rounded-3xl shadow-ios-sm border border-white/80 flex flex-col justify-between space-y-6">
+                    <div class="space-y-3">
+                        <h2 class="text-lg font-bold text-slate-900 flex items-center space-x-2 pb-3 border-b border-slate-200/50">
+                            <i class="fa-solid fa-file-excel text-ios-green"></i>
                             <span>Nạp Excel Hàng Loạt</span>
                         </h2>
-                        <p class="text-xs text-slate-500 leading-relaxed">Tải mẫu Excel chuẩn, điền danh sách vật tư cần nạp và tải lên. Hệ thống xử lý Batching tự động không lo vướng giới hạn Firestore.</p>
+                        <p class="text-xs text-slate-500 leading-relaxed">Tải mẫu Excel tiêu chuẩn, nhập danh sách vật tư cần nạp và tải file lên để hệ thống tự động cập nhật kho.</p>
                     </div>
 
-                    <div class="space-y-3">
-                        <button onclick="downloadImportTemplate()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 font-medium rounded-xl transition-all flex items-center justify-center space-x-2 text-sm">
-                            <i class="fa-solid fa-file-arrow-down"></i>
+                    <div class="space-y-2.5">
+                        <button onclick="downloadImportTemplate()" class="w-full py-2.5 bg-slate-200/70 hover:bg-slate-300/70 text-slate-800 font-semibold rounded-2xl transition-all flex items-center justify-center space-x-2 text-xs ios-btn-active">
+                            <i class="fa-solid fa-file-arrow-down text-ios-blue"></i>
                             <span>Tải Mẫu Excel Nhập Kho</span>
                         </button>
 
-                        <label class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl transition-all shadow-md shadow-emerald-200 flex items-center justify-center space-x-2 cursor-pointer text-sm">
+                        <label class="w-full py-3 bg-ios-green hover:bg-green-600 text-white font-semibold rounded-2xl transition-all shadow-md shadow-ios-green/20 flex items-center justify-center space-x-2 cursor-pointer text-xs ios-btn-active">
                             <i class="fa-solid fa-file-arrow-up"></i>
                             <span>Tải Lên Excel Nạp Kho</span>
                             <input type="file" id="import-excel-file" accept=".xlsx, .xls" onchange="importWarehouseExcel(event)" class="hidden">
@@ -377,67 +431,66 @@
         </section>
 
         <!-- 4. EXPORT WAREHOUSE VIEW -->
-        <section id="view-export" class="view-content hidden">
-            <div class="max-w-2xl mx-auto bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200/80 space-y-6">
-                <div class="border-b border-slate-100 pb-4">
-                    <h2 class="text-lg font-bold text-navy-900 flex items-center space-x-2">
-                        <i class="fa-solid fa-file-export text-sky-600"></i>
+        <section id="view-export" class="page-transition view-hidden-left">
+            <div class="max-w-2xl mx-auto glass-card p-6 sm:p-8 rounded-3xl shadow-ios-sm border border-white/80 space-y-6">
+                <div class="border-b border-slate-200/50 pb-4">
+                    <h2 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                        <i class="fa-solid fa-file-export text-ios-blue"></i>
                         <span>Phiếu Xuất Kho Vật Tư</span>
                     </h2>
-                    <p class="text-xs text-slate-500 mt-1">Xuất vật tư cho bảo trì, sửa chữa hoặc dự án kỹ thuật</p>
+                    <p class="text-xs text-slate-500 mt-0.5">Xuất kho cho bảo trì, sửa chữa hoặc thay thế thiết bị</p>
                 </div>
 
-                <form id="form-export" onsubmit="handleExport(event)" class="space-y-5">
+                <form id="form-export" onsubmit="handleExport(event)" class="space-y-4">
                     <div class="space-y-1.5 relative">
-                        <label class="block text-xs font-semibold uppercase text-slate-600">Chọn Vật tư Cần Xuất <span class="text-rose-500">*</span></label>
+                        <label class="block text-xs font-semibold text-slate-600">Chọn Vật tư Cần Xuất <span class="text-ios-red">*</span></label>
                         <div class="relative">
-                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <input type="text" id="export-search" oninput="searchSmart('export')" placeholder="Nhập tên hoặc mã vật tư..." autocomplete="off" required class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" id="export-search" oninput="searchSmart('export')" placeholder="Nhập tên hoặc mã vật tư..." autocomplete="off" required class="w-full pl-9 pr-8 py-2.5 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue focus:bg-white outline-none">
                         </div>
                         <input type="hidden" id="export-selected-item-id" required>
-                        <div id="export-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-20 max-h-60 overflow-y-auto custom-scrollbar divide-y divide-slate-100"></div>
+                        <div id="export-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-2xl shadow-ios-lg z-30 max-h-56 overflow-y-auto custom-scrollbar divide-y divide-slate-100"></div>
                     </div>
 
-                    <div id="export-selected-badge" class="hidden p-3.5 bg-sky-50/60 border border-sky-200/80 rounded-xl flex items-center justify-between text-xs">
+                    <div id="export-selected-badge" class="hidden p-3.5 bg-ios-blue/10 border border-ios-blue/20 rounded-2xl flex items-center justify-between text-xs">
                         <div class="flex items-center space-x-3">
-                            <span id="export-badge-code" class="font-mono bg-sky-200/60 text-sky-900 font-bold px-2 py-0.5 rounded"></span>
+                            <span id="export-badge-code" class="font-mono bg-ios-blue text-white font-bold px-2 py-0.5 rounded-lg"></span>
                             <span id="export-badge-name" class="font-semibold text-slate-800"></span>
                         </div>
                         <div class="text-slate-600">
-                            Tồn khả dụng: <span id="export-badge-qty" class="font-bold text-sky-700"></span>
+                            Tồn khả dụng: <span id="export-badge-qty" class="font-bold text-ios-blue"></span>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="space-y-1.5">
-                            <label class="block text-xs font-semibold uppercase text-slate-600">Số lượng xuất <span class="text-rose-500">*</span></label>
-                            <input type="number" id="export-qty" min="1" required placeholder="Nhập số lượng" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
+                            <label class="block text-xs font-semibold text-slate-600">Số lượng xuất <span class="text-ios-red">*</span></label>
+                            <input type="number" id="export-qty" min="1" required placeholder="Nhập số lượng" class="w-full px-3.5 py-2.5 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue focus:bg-white outline-none">
                         </div>
                         <div class="space-y-1.5">
-                            <label class="block text-xs font-semibold uppercase text-slate-600">Bộ phận / Người nhận <span class="text-rose-500">*</span></label>
-                            <input type="text" id="export-receiver" required placeholder="Tên người hoặc phòng ban..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
+                            <label class="block text-xs font-semibold text-slate-600">Bộ phận / Người nhận <span class="text-ios-red">*</span></label>
+                            <input type="text" id="export-receiver" required placeholder="Tên người nhận hoặc phòng..." class="w-full px-3.5 py-2.5 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue focus:bg-white outline-none">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="space-y-1.5">
-                            <label class="block text-xs font-semibold uppercase text-slate-600">Mục đích sử dụng</label>
-                            <input type="text" id="export-purpose" placeholder="Ví dụ: Thay thế máy lạnh P.302..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
+                            <label class="block text-xs font-semibold text-slate-600">Mục đích sử dụng</label>
+                            <input type="text" id="export-purpose" placeholder="Ví dụ: Thay thế máy lạnh P.302..." class="w-full px-3.5 py-2.5 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue focus:bg-white outline-none">
                         </div>
-                        <!-- Autocomplete Performer Field -->
                         <div class="space-y-1.5 relative">
-                            <label class="block text-xs font-semibold uppercase text-slate-600">Người thực hiện <span class="text-rose-500">*</span></label>
-                            <input type="text" id="export-performer" required placeholder="Gõ tên để tìm cán bộ..." autocomplete="off" onfocus="searchStaff('export-performer')" oninput="searchStaff('export-performer')" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
-                            <div id="export-performer-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-20 max-h-48 overflow-y-auto custom-scrollbar divide-y divide-slate-100"></div>
+                            <label class="block text-xs font-semibold text-slate-600">Người thực hiện <span class="text-ios-red">*</span></label>
+                            <input type="text" id="export-performer" required placeholder="Gõ tên cán bộ..." autocomplete="off" onfocus="searchStaff('export-performer')" oninput="searchStaff('export-performer')" class="w-full px-3.5 py-2.5 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue focus:bg-white outline-none">
+                            <div id="export-performer-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-2xl shadow-ios-lg z-30 max-h-48 overflow-y-auto custom-scrollbar divide-y divide-slate-100"></div>
                         </div>
                     </div>
 
                     <div class="space-y-1.5">
-                        <label class="block text-xs font-semibold uppercase text-slate-600">Ghi chú</label>
-                        <textarea id="export-note" rows="2" placeholder="Nội dung ghi chú xuất kho..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none"></textarea>
+                        <label class="block text-xs font-semibold text-slate-600">Ghi chú</label>
+                        <textarea id="export-note" rows="2" placeholder="Ghi chú thêm..." class="w-full px-3.5 py-2.5 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue focus:bg-white outline-none"></textarea>
                     </div>
 
-                    <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3 rounded-xl text-sm transition-colors shadow-md shadow-sky-200 flex items-center justify-center space-x-2">
+                    <button type="submit" class="w-full bg-ios-blue hover:bg-blue-600 text-white font-semibold py-3 rounded-2xl text-xs transition-all shadow-md shadow-ios-blue/20 flex items-center justify-center space-x-2 ios-btn-active">
                         <i class="fa-solid fa-paper-plane"></i>
                         <span>Xác Nhận Xuất Kho</span>
                     </button>
@@ -445,65 +498,75 @@
             </div>
         </section>
 
-        <!-- 5. STOCKTAKE VIEW -->
-        <section id="view-stocktake" class="view-content hidden space-y-5">
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-wrap items-center justify-between gap-4">
+        <!-- 5. STOCKTAKE VIEW WITH EXCEL IMPORT/EXPORT -->
+        <section id="view-stocktake" class="page-transition view-hidden-left space-y-5">
+            <div class="glass-card p-5 rounded-3xl shadow-ios-sm border border-white/80 flex flex-wrap items-center justify-between gap-4">
                 <div>
-                    <h2 class="text-lg font-bold text-navy-900 flex items-center space-x-2">
-                        <i class="fa-solid fa-clipboard-check text-amber-500"></i>
-                        <span>Kiểm Kê Vật Tư Kho</span>
+                    <h2 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                        <i class="fa-solid fa-clipboard-check text-ios-purple"></i>
+                        <span>Kiểm Kê Kho Vật Tư</span>
                     </h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Cân bằng số lượng thực tế & chốt chênh lệch lên Firestore Cloud</p>
+                    <p class="text-xs text-slate-500 mt-0.5">Kiểm đếm thực tế, chốt chênh lệch & đồng bộ Excel</p>
                 </div>
 
-                <div class="flex items-center space-x-2">
-                    <button id="btn-create-stocktake" onclick="openStocktakeModal()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-semibold transition-all flex items-center space-x-2 shadow-sm">
-                        <i class="fa-solid fa-plus-circle"></i><span>Tạo Phiếu Kiểm Kê Mới</span>
+                <div class="flex items-center space-x-2 flex-wrap gap-y-2">
+                    <button id="btn-create-stocktake" onclick="openStocktakeModal()" class="px-4 py-2 bg-ios-purple hover:bg-purple-600 text-white rounded-2xl text-xs font-semibold transition-all flex items-center space-x-1.5 shadow-md shadow-ios-purple/20 ios-btn-active">
+                        <i class="fa-solid fa-plus-circle"></i><span>Tạo Phiếu Kiểm Kê</span>
                     </button>
-                    <button id="btn-finalize-stocktake" onclick="finalizeStocktake()" class="hidden px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition-all flex items-center space-x-2 shadow-sm">
-                        <i class="fa-solid fa-check-double"></i><span>Chốt Phiếu & Đồng Bộ</span>
+
+                    <!-- Stocktake Excel Action Buttons -->
+                    <button id="btn-export-stocktake-excel" onclick="exportStocktakeTemplateExcel()" class="hidden px-3.5 py-2 bg-slate-200/80 hover:bg-slate-300/80 text-slate-800 rounded-2xl text-xs font-semibold transition-all flex items-center space-x-1.5 ios-btn-active">
+                        <i class="fa-solid fa-file-excel text-ios-green"></i><span>Xuất Excel Kiểm Kê</span>
+                    </button>
+
+                    <label id="btn-import-stocktake-excel" class="hidden px-3.5 py-2 bg-ios-teal hover:bg-teal-600 text-white rounded-2xl text-xs font-semibold transition-all flex items-center space-x-1.5 shadow-md shadow-ios-teal/20 cursor-pointer ios-btn-active">
+                        <i class="fa-solid fa-file-arrow-up"></i><span>Nạp Excel Kiểm Đếm</span>
+                        <input type="file" id="stocktake-excel-input" accept=".xlsx, .xls" onchange="importStocktakeExcel(event)" class="hidden">
+                    </label>
+
+                    <button id="btn-finalize-stocktake" onclick="finalizeStocktake()" class="hidden px-4 py-2 bg-ios-green hover:bg-green-600 text-white rounded-2xl text-xs font-semibold transition-all flex items-center space-x-1.5 shadow-md shadow-ios-green/20 ios-btn-active">
+                        <i class="fa-solid fa-check-double"></i><span>Chốt & Đồng Bộ Kho</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Active Stocktake Table -->
-            <div id="stocktake-container" class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+            <!-- Active Stocktake Interactive List -->
+            <div id="stocktake-container" class="glass-card rounded-3xl shadow-ios-sm border border-white/80 overflow-hidden">
                 <div class="p-8 text-center text-slate-400">
                     <i class="fa-solid fa-clipboard-list text-4xl mb-3 opacity-30"></i>
-                    <p>Chưa có phiếu kiểm kê nào đang hoạt động.</p>
-                    <p class="text-xs mt-1">Bấm nút "Tạo Phiếu Kiểm Kê Mới" để bắt đầu quá trình đếm kho.</p>
+                    <p class="text-sm font-medium">Chưa có phiếu kiểm kê nào đang mở.</p>
+                    <p class="text-xs mt-1">Hãy bấm "Tạo Phiếu Kiểm Kê" để bắt đầu quy trình đối soát.</p>
                 </div>
             </div>
         </section>
 
         <!-- 6. TRANSACTION HISTORY VIEW -->
-        <section id="view-history" class="view-content hidden space-y-5">
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col md:flex-row gap-4 items-center justify-between">
-                <div class="flex flex-1 flex-col sm:flex-row gap-3 w-full md:w-auto">
+        <section id="view-history" class="page-transition view-hidden-left space-y-5">
+            <div class="glass-card p-4 rounded-3xl shadow-ios-sm border border-white/80 flex flex-col md:flex-row gap-3 items-center justify-between">
+                <div class="flex flex-1 flex-col sm:flex-row gap-2.5 w-full md:w-auto">
                     <div class="relative flex-1">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="text" id="history-search" oninput="renderHistoryTable()" placeholder="Tìm theo mã VT, tên VT, người thực hiện..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="history-search" oninput="renderHistoryTable()" placeholder="Tìm theo VT, người thực hiện..." class="w-full pl-9 pr-4 py-2 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue focus:bg-white outline-none">
                     </div>
-                    <select id="history-type-filter" onchange="renderHistoryTable()" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-medium">
-                        <option value="ALL">Tất cả loại phiếu</option>
+                    <select id="history-type-filter" onchange="renderHistoryTable()" class="bg-slate-100/80 border-0 rounded-2xl px-3 py-2 text-xs font-semibold text-slate-700 focus:ring-2 focus:ring-ios-blue focus:bg-white outline-none">
+                        <option value="ALL">Tất cả loại giao dịch</option>
                         <option value="IMPORT">Nhập kho</option>
                         <option value="EXPORT">Xuất kho</option>
                         <option value="ADJUST">Kiểm kê</option>
                     </select>
                 </div>
                 <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
-                    <button onclick="exportToCSV('history')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-xl text-sm transition-colors flex items-center justify-center space-x-2 shadow-sm shadow-emerald-200">
+                    <button onclick="exportToCSV('history')" class="bg-ios-blue hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-2xl text-xs transition-all shadow-md shadow-ios-blue/20 flex items-center space-x-1.5 ios-btn-active">
                         <i class="fa-solid fa-file-csv"></i>
-                        <span>Xuất CSV</span>
+                        <span>Xuất Lịch Sử CSV</span>
                     </button>
                 </div>
             </div>
 
-            <!-- History Table -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+            <div class="glass-card rounded-3xl shadow-ios-sm border border-white/80 overflow-hidden">
                 <div class="overflow-x-auto max-h-[550px] custom-scrollbar">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold border-b border-slate-200 sticky top-0 z-10">
+                        <thead class="bg-slate-100/80 text-slate-500 text-[11px] uppercase font-bold sticky top-0 z-10 border-b border-slate-200/50 backdrop-blur-md">
                             <tr>
                                 <th class="px-5 py-3.5">Thời Gian</th>
                                 <th class="px-5 py-3.5">Loại Giao Dịch</th>
@@ -515,8 +578,8 @@
                                 <th class="px-5 py-3.5">Ghi Chú</th>
                             </tr>
                         </thead>
-                        <tbody id="history-tbody" class="divide-y divide-slate-100">
-                            <!-- JS Populated -->
+                        <tbody id="history-tbody" class="divide-y divide-slate-200/40">
+                            <!-- JS Dynamic Injection -->
                         </tbody>
                     </table>
                 </div>
@@ -524,96 +587,94 @@
         </section>
 
         <!-- 7. TRACE / LOOKUP VIEW -->
-        <section id="view-trace" class="view-content hidden space-y-6">
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 space-y-4">
-                <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+        <section id="view-trace" class="page-transition view-hidden-left space-y-6">
+            <div class="glass-card p-5 rounded-3xl shadow-ios-sm border border-white/80 space-y-4">
+                <div class="border-b border-slate-200/50 pb-3 flex items-center justify-between">
                     <div>
-                        <h2 class="text-lg font-bold text-navy-900 flex items-center space-x-2">
-                            <i class="fa-solid fa-magnifying-glass-chart text-amber-500"></i>
-                            <span>Truy Xuất Toàn Bộ Lịch Sử Lịch Sử Giao Dịch</span>
+                        <h2 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                            <i class="fa-solid fa-magnifying-glass-chart text-ios-orange"></i>
+                            <span>Truy Xuất Toàn Bộ Giao Dịch</span>
                         </h2>
-                        <p class="text-xs text-slate-500 mt-1">Tra cứu chi tiết toàn bộ lịch sử giao dịch theo Vật tư hoặc Nhân viên thực hiện</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Tra cứu chi tiết nhật ký kho theo Vật tư hoặc Nhân sự thực hiện</p>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold uppercase text-slate-600 mb-1.5">Loại hình truy xuất</label>
-                        <select id="trace-mode" onchange="handleTraceModeChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 outline-none">
-                            <option value="item">📦 Truy xuất theo Vật tư</option>
-                            <option value="performer">👤 Truy xuất theo Người thực hiện</option>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Chế độ truy xuất</label>
+                        <select id="trace-mode" onchange="handleTraceModeChange()" class="w-full bg-slate-100/80 border-0 rounded-2xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-ios-orange outline-none">
+                            <option value="item">📦 Theo Vật tư kỹ thuật</option>
+                            <option value="performer">👤 Theo Người thực hiện</option>
                         </select>
                     </div>
 
                     <div class="md:col-span-2">
-                        <label id="trace-target-label" class="block text-xs font-semibold uppercase text-slate-600 mb-1.5">Chọn Vật tư truy xuất</label>
-                        <select id="trace-target-select" onchange="executeTrace()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 outline-none">
+                        <label id="trace-target-label" class="block text-xs font-semibold text-slate-600 mb-1.5">Chọn Đối tượng truy xuất</label>
+                        <select id="trace-target-select" onchange="executeTrace()" class="w-full bg-slate-100/80 border-0 rounded-2xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-ios-orange outline-none">
                         </select>
                     </div>
                 </div>
             </div>
 
-            <!-- Target Summary Card -->
-            <div id="trace-summary-card" class="hidden bg-navy-900 text-white p-6 rounded-2xl shadow-md space-y-4 border border-navy-800">
+            <div id="trace-summary-card" class="hidden bg-slate-900 text-white p-6 rounded-3xl shadow-ios-md space-y-4">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
                     <div>
-                        <span id="trace-summary-badge" class="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs px-2.5 py-1 rounded-md font-mono font-bold uppercase">MỤC TRUY XUẤT</span>
-                        <h3 id="trace-summary-title" class="text-xl font-bold text-white mt-1">---</h3>
+                        <span id="trace-summary-badge" class="bg-ios-orange/20 text-ios-orange border border-ios-orange/30 text-[10px] px-2.5 py-0.5 rounded-full font-mono font-bold uppercase">MỤC TRUY XUẤT</span>
+                        <h3 id="trace-summary-title" class="text-lg font-bold text-white mt-1">---</h3>
                         <p id="trace-summary-subtitle" class="text-xs text-slate-400 mt-0.5">---</p>
                     </div>
-                    <div class="flex items-center space-x-3 text-right">
-                        <button onclick="exportToCSV('trace')" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-4 py-2 rounded-xl text-xs transition-colors flex items-center space-x-2">
+                    <div>
+                        <button onclick="exportToCSV('trace')" class="bg-ios-orange hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-2xl text-xs transition-colors flex items-center space-x-1.5 ios-btn-active">
                             <i class="fa-solid fa-file-csv"></i>
-                            <span>Xuất báo cáo CSV</span>
+                            <span>Xuất báo cáo</span>
                         </button>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-                    <div class="bg-navy-800/70 p-3 rounded-xl border border-slate-800">
-                        <span class="text-slate-400 block mb-1">Tổng số giao dịch:</span>
+                    <div class="bg-slate-800/80 p-3 rounded-2xl border border-slate-700/50">
+                        <span class="text-slate-400 block mb-1">Tổng lượt giao dịch:</span>
                         <span id="trace-stat-total" class="text-lg font-bold text-white">0</span>
                     </div>
-                    <div class="bg-navy-800/70 p-3 rounded-xl border border-slate-800">
-                        <span class="text-emerald-400 block mb-1">Tổng lượt Nhập kho:</span>
-                        <span id="trace-stat-imports" class="text-lg font-bold text-emerald-400">0</span>
+                    <div class="bg-slate-800/80 p-3 rounded-2xl border border-slate-700/50">
+                        <span class="text-ios-green block mb-1">Lượt Nhập kho:</span>
+                        <span id="trace-stat-imports" class="text-lg font-bold text-ios-green">0</span>
                     </div>
-                    <div class="bg-navy-800/70 p-3 rounded-xl border border-slate-800">
-                        <span class="text-sky-400 block mb-1">Tổng lượt Xuất kho:</span>
-                        <span id="trace-stat-exports" class="text-lg font-bold text-sky-400">0</span>
+                    <div class="bg-slate-800/80 p-3 rounded-2xl border border-slate-700/50">
+                        <span class="text-ios-blue block mb-1">Lượt Xuất kho:</span>
+                        <span id="trace-stat-exports" class="text-lg font-bold text-ios-blue">0</span>
                     </div>
-                    <div class="bg-navy-800/70 p-3 rounded-xl border border-slate-800">
-                        <span class="text-amber-400 block mb-1" id="trace-stat-4-label">Khối lượng luân chuyển:</span>
-                        <span id="trace-stat-4-val" class="text-lg font-bold text-amber-400">0</span>
+                    <div class="bg-slate-800/80 p-3 rounded-2xl border border-slate-700/50">
+                        <span class="text-ios-orange block mb-1" id="trace-stat-4-label">Khối lượng luân chuyển:</span>
+                        <span id="trace-stat-4-val" class="text-lg font-bold text-ios-orange">0</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Trace Detail Table -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
-                <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                    <h3 class="font-bold text-navy-900 text-sm flex items-center space-x-2">
-                        <i class="fa-solid fa-list-ul text-amber-500"></i>
-                        <span>Chi tiết Nhật ký Giao dịch Đối tượng</span>
+            <div class="glass-card rounded-3xl shadow-ios-sm border border-white/80 overflow-hidden">
+                <div class="p-4 border-b border-slate-200/50 bg-white/40">
+                    <h3 class="font-bold text-slate-900 text-xs sm:text-sm flex items-center space-x-2">
+                        <i class="fa-solid fa-list-ul text-ios-orange"></i>
+                        <span>Chi Tiết Lịch Sử Giao Dịch Đối Tượng</span>
                     </h3>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold border-b border-slate-200">
+                        <thead class="bg-slate-100/80 text-slate-500 text-[11px] uppercase font-bold border-b border-slate-200/50">
                             <tr>
                                 <th class="px-5 py-3.5">Thời gian</th>
                                 <th class="px-5 py-3.5">Loại GD</th>
-                                <th class="px-5 py-3.5">Vật tư / Thông tin</th>
+                                <th class="px-5 py-3.5">Vật tư / Chi tiết</th>
                                 <th class="px-5 py-3.5 text-right">Số lượng</th>
-                                <th class="px-5 py-3.5">Đối tác / Người nhận</th>
+                                <th class="px-5 py-3.5">Đối tác / Bộ phận</th>
                                 <th class="px-5 py-3.5">Người thực hiện</th>
                                 <th class="px-5 py-3.5">Ghi chú</th>
                             </tr>
                         </thead>
-                        <tbody id="trace-table-body" class="divide-y divide-slate-100">
+                        <tbody id="trace-table-body" class="divide-y divide-slate-200/40">
                             <tr>
                                 <td colspan="7" class="px-5 py-10 text-center text-slate-400 italic">
-                                    Vui lòng chọn đối tượng để thực hiện truy xuất toàn bộ lịch sử.
+                                    Vui lòng chọn đối tượng để xem nhật ký chi tiết.
                                 </td>
                             </tr>
                         </tbody>
@@ -623,16 +684,16 @@
         </section>
     </main>
 
-    <!-- MODAL 1: ADD / EDIT ITEM -->
-    <div id="modal-item" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all space-y-4">
-            <div class="px-6 py-4 bg-navy-900 text-white flex items-center justify-between">
-                <h3 id="modal-item-title" class="font-bold text-base flex items-center space-x-2">
-                    <i class="fa-solid fa-box text-emerald-400"></i>
+    <!-- MODAL 1: ADD / EDIT ITEM (iOS Glass Popup) -->
+    <div id="modal-item" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card bg-white/95 rounded-3xl shadow-ios-lg max-w-md w-full overflow-hidden transform transition-all space-y-4 border border-white">
+            <div class="px-6 py-4 bg-slate-100/80 border-b border-slate-200/50 flex items-center justify-between">
+                <h3 id="modal-item-title" class="font-bold text-sm sm:text-base text-slate-900 flex items-center space-x-2">
+                    <i class="fa-solid fa-box text-ios-blue"></i>
                     <span>Thêm Vật Tư Mới</span>
                 </h3>
-                <button onclick="closeItemModal()" class="text-slate-400 hover:text-white transition-colors">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+                <button onclick="closeItemModal()" class="w-7 h-7 bg-slate-200/70 hover:bg-slate-300 rounded-full flex items-center justify-center text-slate-500 transition-colors">
+                    <i class="fa-solid fa-xmark text-xs"></i>
                 </button>
             </div>
 
@@ -640,8 +701,8 @@
                 <input type="hidden" id="item-id">
 
                 <div class="space-y-1.5">
-                    <label class="block text-xs font-semibold uppercase text-slate-600">Danh Mục <span class="text-rose-500">*</span></label>
-                    <select id="item-category" required onchange="generateCodeForCategory()" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
+                    <label class="block text-xs font-semibold text-slate-600">Danh Mục <span class="text-ios-red">*</span></label>
+                    <select id="item-category" required onchange="generateCodeForCategory()" class="w-full px-3.5 py-2.5 bg-slate-100/80 border-0 rounded-2xl text-xs font-semibold focus:ring-2 focus:ring-ios-blue outline-none">
                         <option value="ME">Kỹ thuật ME</option>
                         <option value="BM">Tòa nhà BM</option>
                         <option value="AC">Điện lạnh AC</option>
@@ -652,40 +713,40 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div class="space-y-1.5">
-                        <label class="block text-xs font-semibold uppercase text-slate-600">Mã Vật Tư <span class="text-rose-500">*</span></label>
-                        <input type="text" id="item-code" required readonly class="w-full font-mono font-bold text-emerald-700 bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none cursor-not-allowed">
+                        <label class="block text-xs font-semibold text-slate-600">Mã Vật Tư <span class="text-ios-red">*</span></label>
+                        <input type="text" id="item-code" required readonly class="w-full font-mono font-bold text-ios-blue bg-slate-200/60 rounded-2xl px-3.5 py-2.5 text-xs outline-none cursor-not-allowed">
                     </div>
                     <div class="space-y-1.5">
-                        <label class="block text-xs font-semibold uppercase text-slate-600">Đơn Vị Tính <span class="text-rose-500">*</span></label>
-                        <input type="text" id="item-unit" required placeholder="Cái, Cuộn, Bộ..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
+                        <label class="block text-xs font-semibold text-slate-600">Đơn Vị Tính <span class="text-ios-red">*</span></label>
+                        <input type="text" id="item-unit" required placeholder="Cái, Bộ, Mét..." class="w-full px-3.5 py-2.5 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none">
                     </div>
                 </div>
 
                 <div class="space-y-1.5">
-                    <label class="block text-xs font-semibold uppercase text-slate-600">Tên Vật Tư <span class="text-rose-500">*</span></label>
-                    <input type="text" id="item-name" required placeholder="Nhập tên vật tư..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
+                    <label class="block text-xs font-semibold text-slate-600">Tên Vật Tư <span class="text-ios-red">*</span></label>
+                    <input type="text" id="item-name" required placeholder="Nhập tên vật tư..." class="w-full px-3.5 py-2.5 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none">
                 </div>
 
                 <div class="grid grid-cols-3 gap-3">
                     <div class="space-y-1.5">
-                        <label class="block text-xs font-semibold uppercase text-slate-600">Tồn Ban Đầu</label>
-                        <input type="number" id="item-quantity" min="0" value="0" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
+                        <label class="block text-xs font-semibold text-slate-600">Tồn Đầu</label>
+                        <input type="number" id="item-quantity" min="0" value="0" class="w-full px-3 py-2 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none">
                     </div>
                     <div class="space-y-1.5">
-                        <label class="block text-xs font-semibold uppercase text-slate-600">Mức Tối Thiểu</label>
-                        <input type="number" id="item-min-stock" min="0" value="5" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
+                        <label class="block text-xs font-semibold text-slate-600">Tối Thiểu</label>
+                        <input type="number" id="item-min-stock" min="0" value="5" class="w-full px-3 py-2 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none">
                     </div>
                     <div class="space-y-1.5">
-                        <label class="block text-xs font-semibold uppercase text-slate-600">Đơn Giá (VNĐ)</label>
-                        <input type="number" id="item-price" min="0" value="0" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
+                        <label class="block text-xs font-semibold text-slate-600">Đơn Giá</label>
+                        <input type="number" id="item-price" min="0" value="0" class="w-full px-3 py-2 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none">
                     </div>
                 </div>
 
-                <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="closeItemModal()" class="px-4 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl text-sm font-medium transition-colors">Hủy</button>
-                    <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium transition-colors shadow-md shadow-emerald-200 flex items-center space-x-1.5">
+                <div class="flex items-center justify-end space-x-2 pt-3 border-t border-slate-200/50">
+                    <button type="button" onclick="closeItemModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-2xl text-xs font-semibold transition-colors">Hủy</button>
+                    <button type="submit" class="px-5 py-2 bg-ios-blue hover:bg-blue-600 text-white rounded-2xl text-xs font-semibold transition-all shadow-md shadow-ios-blue/20 flex items-center space-x-1.5 ios-btn-active">
                         <i class="fa-solid fa-floppy-disk"></i>
-                        <span>Lưu Vật Tư</span>
+                        <span>Lưu Dữ Liệu</span>
                     </button>
                 </div>
             </form>
@@ -693,28 +754,28 @@
     </div>
 
     <!-- MODAL 2: STOCKTAKE PERFORMER SELECTION -->
-    <div id="modal-stocktake" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all space-y-4">
-            <div class="px-6 py-4 bg-navy-900 text-white flex items-center justify-between">
-                <h3 class="font-bold text-base flex items-center space-x-2">
-                    <i class="fa-solid fa-clipboard-check text-amber-400"></i>
+    <div id="modal-stocktake" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card bg-white/95 rounded-3xl shadow-ios-lg max-w-md w-full overflow-hidden transform transition-all space-y-4 border border-white">
+            <div class="px-6 py-4 bg-slate-100/80 border-b border-slate-200/50 flex items-center justify-between">
+                <h3 class="font-bold text-sm sm:text-base text-slate-900 flex items-center space-x-2">
+                    <i class="fa-solid fa-clipboard-check text-ios-purple"></i>
                     <span>Tạo Phiếu Kiểm Kê Kho</span>
                 </h3>
-                <button onclick="closeStocktakeModal()" class="text-slate-400 hover:text-white transition-colors">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+                <button onclick="closeStocktakeModal()" class="w-7 h-7 bg-slate-200/70 hover:bg-slate-300 rounded-full flex items-center justify-center text-slate-500 transition-colors">
+                    <i class="fa-solid fa-xmark text-xs"></i>
                 </button>
             </div>
 
             <div class="p-6 pt-0 space-y-4">
                 <div class="space-y-1.5 relative">
-                    <label class="block text-xs font-semibold uppercase text-slate-600">Trưởng Ban / Cán Bố Thực Hiện *</label>
-                    <input type="text" id="stocktake-performer-input" placeholder="Gõ tên để chọn cán bộ..." autocomplete="off" onfocus="searchStaff('stocktake-performer-input')" oninput="searchStaff('stocktake-performer-input')" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 outline-none">
-                    <div id="stocktake-performer-input-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-20 max-h-48 overflow-y-auto custom-scrollbar divide-y divide-slate-100"></div>
+                    <label class="block text-xs font-semibold text-slate-600">Trưởng Ban / Cán Bố Kiểm Kê <span class="text-ios-red">*</span></label>
+                    <input type="text" id="stocktake-performer-input" placeholder="Gõ tên để chọn cán bộ..." autocomplete="off" onfocus="searchStaff('stocktake-performer-input')" oninput="searchStaff('stocktake-performer-input')" class="w-full px-3.5 py-2.5 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-purple outline-none">
+                    <div id="stocktake-performer-input-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-2xl shadow-ios-lg z-30 max-h-48 overflow-y-auto custom-scrollbar divide-y divide-slate-100"></div>
                 </div>
 
-                <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="closeStocktakeModal()" class="px-4 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl text-sm font-medium transition-colors">Hủy</button>
-                    <button type="button" onclick="confirmCreateStocktake()" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-semibold transition-colors shadow-sm flex items-center space-x-1.5">
+                <div class="flex items-center justify-end space-x-2 pt-3 border-t border-slate-200/50">
+                    <button type="button" onclick="closeStocktakeModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-2xl text-xs font-semibold transition-colors">Hủy</button>
+                    <button type="button" onclick="confirmCreateStocktake()" class="px-5 py-2 bg-ios-purple hover:bg-purple-600 text-white rounded-2xl text-xs font-semibold transition-all shadow-md shadow-ios-purple/20 flex items-center space-x-1.5 ios-btn-active">
                         <i class="fa-solid fa-check"></i>
                         <span>Bắt Đầu Kiểm Kê</span>
                     </button>
@@ -723,7 +784,7 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- SYSTEM LOGIC JAVASCRIPT -->
     <script>
         const EMPLOYEE_LIST = [
             "Trịnh Văn HÙNG", "Huỳnh ĐỨC", "Sơn Hoài PHƯƠNG", "Trần T.Lệ HUYỀN", "Nguyễn Văn CHÂU",
@@ -749,12 +810,12 @@
         }
         const db = firebase.firestore();
 
-        // Global State
+        // Global Application State
         let inventoryData = [];
         let historyData = [];
         let activeStocktake = null;
         let currentTab = 'dashboard';
-        let activeDashboardFilter = 'all'; // 'all', 'low', 'out'
+        let activeDashboardFilter = 'all';
         let currentTraceResults = [];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -762,7 +823,6 @@
             setupOutsideClicks();
         });
 
-        // Helper: Remove Vietnamese Tones for Search
         function removeVietnameseTones(str) {
             if (!str) return '';
             str = str.toLowerCase();
@@ -774,6 +834,29 @@
             str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
             str = str.replace(/đ/g, "d");
             return str;
+        }
+
+        // Toast Notification System
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const isError = type === 'error';
+            toast.className = `transform transition-all duration-300 ease-out translate-y-2 opacity-0 flex items-center space-x-2 px-4 py-3 rounded-2xl shadow-ios-lg text-xs font-semibold backdrop-blur-xl border ${
+                isError 
+                ? 'bg-ios-red/90 text-white border-ios-red/30' 
+                : 'bg-slate-900/90 text-white border-slate-700/50'
+            }`;
+            toast.innerHTML = `<i class="fa-solid ${isError ? 'fa-circle-exclamation text-ios-orange' : 'fa-circle-check text-ios-green'}"></i><span>${message}</span>`;
+            
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
         // 2. FIRESTORE REALTIME SYNC
@@ -788,11 +871,11 @@
                 renderInventoryTable();
                 updateDashboardStats();
                 renderDashboardCardDetails();
-                badge.className = "flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold";
-                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span><span>Cloud Online (${inventoryData.length} VT)</span>`;
+                badge.className = "flex items-center space-x-2 px-3 py-1.5 rounded-full bg-ios-green/10 text-ios-green border border-ios-green/20 text-xs font-semibold backdrop-blur-md";
+                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-ios-green"></span><span>Online (${inventoryData.length} VT)</span>`;
             }, (error) => {
-                badge.className = "flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs font-semibold";
-                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-400"></span><span>Lỗi Đồng Bộ Cloud</span>`;
+                badge.className = "flex items-center space-x-2 px-3 py-1.5 rounded-full bg-ios-red/10 text-ios-red border border-ios-red/20 text-xs font-semibold backdrop-blur-md";
+                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-ios-red"></span><span>Lỗi Kết Nối</span>`;
                 showToast("Lỗi đồng bộ dữ liệu: " + error.message, "error");
             });
 
@@ -816,37 +899,51 @@
             });
         }
 
-        // 3. NAVIGATION SWITCHING
+        // 3. FADE DIM ZOOM PAGE TRANSITION SYSTEM
         function switchTab(tabId) {
-            currentTab = tabId;
+            if (currentTab === tabId) return;
+
             document.querySelectorAll('.nav-tab').forEach(btn => {
-                btn.classList.remove('text-emerald-400', 'border-emerald-400');
-                btn.classList.add('text-slate-300', 'border-transparent');
+                btn.classList.remove('bg-white', 'text-slate-900', 'shadow-ios-sm');
+                btn.classList.add('text-slate-600');
             });
 
             const activeBtn = document.getElementById(`tab-${tabId}`);
             if (activeBtn) {
-                activeBtn.classList.remove('text-slate-300', 'border-transparent');
-                activeBtn.classList.add('text-emerald-400', 'border-emerald-400');
+                activeBtn.classList.remove('text-slate-600');
+                activeBtn.classList.add('bg-white', 'text-slate-900', 'shadow-ios-sm');
             }
 
-            document.querySelectorAll('.view-content').forEach(view => view.classList.add('hidden'));
-            document.getElementById(`view-${tabId}`)?.classList.remove('hidden');
+            const currentView = document.getElementById(`view-${currentTab}`);
+            const nextView = document.getElementById(`view-${tabId}`);
 
-            if (tabId === 'dashboard') {
-                updateDashboardStats();
-                renderDashboardCardDetails();
-                renderRecentActivities();
-            } else if (tabId === 'inventory') {
-                renderInventoryTable();
-            } else if (tabId === 'history') {
-                renderHistoryTable();
-            } else if (tabId === 'trace') {
-                handleTraceModeChange();
+            if (currentView && nextView) {
+                // Outward animation
+                currentView.classList.remove('view-active');
+                currentView.classList.add('view-hidden-left');
+
+                // Inward animation
+                setTimeout(() => {
+                    nextView.classList.remove('view-hidden-left');
+                    nextView.classList.add('view-active');
+                    currentTab = tabId;
+
+                    if (tabId === 'dashboard') {
+                        updateDashboardStats();
+                        renderDashboardCardDetails();
+                        renderRecentActivities();
+                    } else if (tabId === 'inventory') {
+                        renderInventoryTable();
+                    } else if (tabId === 'history') {
+                        renderHistoryTable();
+                    } else if (tabId === 'trace') {
+                        handleTraceModeChange();
+                    }
+                }, 100);
             }
         }
 
-        // 4. DASHBOARD STATS & CARD CLICK HANDLERS
+        // 4. DASHBOARD LOGIC
         function updateDashboardStats() {
             const totalTypes = inventoryData.length;
             const totalQty = inventoryData.reduce((acc, curr) => acc + (curr.quantity || 0), 0);
@@ -866,23 +963,6 @@
 
         function selectDashboardCard(filterType) {
             activeDashboardFilter = filterType;
-
-            const cardMap = {
-                'all': { id: 'card-total', border: 'border-emerald-500' },
-                'low': { id: 'card-low', border: 'border-amber-500' },
-                'out': { id: 'card-out', border: 'border-rose-500' }
-            };
-
-            document.querySelectorAll('.dashboard-card').forEach(card => {
-                card.className = "dashboard-card bg-white p-5 rounded-2xl shadow-sm border-2 border-transparent hover:border-slate-300 cursor-pointer hover:shadow-md transition-all flex items-center justify-between";
-            });
-
-            const selected = cardMap[filterType];
-            if (selected) {
-                const el = document.getElementById(selected.id);
-                if (el) el.className = `dashboard-card bg-white p-5 rounded-2xl shadow-sm border-2 ${selected.border} cursor-pointer hover:shadow-md transition-all flex items-center justify-between`;
-            }
-
             renderDashboardCardDetails();
         }
 
@@ -898,18 +978,18 @@
             switch (activeDashboardFilter) {
                 case 'low':
                     filteredItems = inventoryData.filter(i => (i.quantity || 0) > 0 && (i.quantity || 0) <= (i.minStock || 0));
-                    titleText = 'Vật tư cảnh báo sắp hết kho';
-                    iconClass = 'fa-solid fa-triangle-exclamation text-amber-500';
+                    titleText = 'Vật tư cảnh báo sắp hết';
+                    iconClass = 'fa-solid fa-triangle-exclamation text-ios-orange';
                     break;
                 case 'out':
                     filteredItems = inventoryData.filter(i => (i.quantity || 0) === 0);
-                    titleText = 'Vật tư đã hết hàng khẩn cấp';
-                    iconClass = 'fa-solid fa-circle-xmark text-rose-500';
+                    titleText = 'Vật tư đã hết hàng';
+                    iconClass = 'fa-solid fa-circle-xmark text-ios-red';
                     break;
                 default:
                     filteredItems = inventoryData;
-                    titleText = 'Danh sách tất cả loại vật tư';
-                    iconClass = 'fa-solid fa-list-check text-emerald-600';
+                    titleText = 'Tất cả danh mục vật tư';
+                    iconClass = 'fa-solid fa-list-check text-ios-blue';
                     break;
             }
 
@@ -917,7 +997,7 @@
             if (iconEl) iconEl.className = iconClass;
 
             if (filteredItems.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="px-5 py-6 text-center text-slate-400 italic">Không có vật tư nào thuộc mục này.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="px-5 py-6 text-center text-slate-400 italic">Không có dữ liệu trong danh mục này.</td></tr>`;
                 return;
             }
 
@@ -925,20 +1005,20 @@
                 const qty = item.quantity || 0;
                 const min = item.minStock || 0;
                 return `
-                    <tr class="hover:bg-slate-50 transition-colors text-xs">
+                    <tr class="hover:bg-slate-100/50 transition-colors text-xs">
                         <td class="px-4 py-3 font-mono font-bold text-slate-700">${item.code || '-'}</td>
                         <td class="px-4 py-3 font-semibold text-slate-800">${item.name || '-'}</td>
                         <td class="px-4 py-3 text-center font-bold text-slate-700">${qty} / <span class="text-slate-400 font-normal">${min}</span> ${item.unit || 'Cái'}</td>
                         <td class="px-4 py-3 text-center">
                             ${qty === 0 
-                                ? `<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-rose-100 text-rose-700">Hết hàng</span>`
+                                ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-ios-red/10 text-ios-red">Hết hàng</span>`
                                 : qty <= min
-                                ? `<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-100 text-amber-700">Sắp hết</span>`
-                                : `<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-100 text-emerald-700">An toàn</span>`}
+                                ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-ios-orange/10 text-ios-orange">Sắp hết</span>`
+                                : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-ios-green/10 text-ios-green">An toàn</span>`}
                         </td>
-                        <td class="px-4 py-3 text-right space-x-1">
-                            <button onclick="quickSelectImport('${item.id}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs font-semibold transition-colors">
-                                + Nhập kho
+                        <td class="px-4 py-3 text-right">
+                            <button onclick="quickSelectImport('${item.id}')" class="bg-ios-green/10 hover:bg-ios-green hover:text-white text-ios-green px-2.5 py-1 rounded-xl text-[11px] font-semibold transition-all ios-btn-active">
+                                + Nhập
                             </button>
                         </td>
                     </tr>
@@ -949,28 +1029,28 @@
         function renderRecentActivities() {
             const container = document.getElementById('dashboard-recent-activities');
             if (historyData.length === 0) {
-                container.innerHTML = `<p class="text-slate-400 text-xs text-center py-4 italic">Chưa có giao dịch nào được thực hiện.</p>`;
+                container.innerHTML = `<p class="text-slate-400 text-xs text-center py-4 italic">Chưa ghi nhận giao dịch nào.</p>`;
                 return;
             }
 
-            const recent = historyData.slice(0, 5);
+            const recent = historyData.slice(0, 6);
             container.innerHTML = recent.map(h => `
-                <div class="flex items-start space-x-3 text-xs border-b border-slate-50 pb-3 last:border-0 last:pb-0">
-                    <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${h.type === 'IMPORT' ? 'bg-emerald-100 text-emerald-600' : h.type === 'EXPORT' ? 'bg-sky-100 text-sky-600' : 'bg-amber-100 text-amber-600'}">
-                        <i class="fa-solid ${h.type === 'IMPORT' ? 'fa-arrow-down' : h.type === 'EXPORT' ? 'fa-arrow-up' : 'fa-clipboard-check'}"></i>
+                <div class="flex items-center space-x-3 text-xs bg-slate-100/50 p-2.5 rounded-2xl border border-slate-200/40">
+                    <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${h.type === 'IMPORT' ? 'bg-ios-green/10 text-ios-green' : h.type === 'EXPORT' ? 'bg-ios-blue/10 text-ios-blue' : 'bg-ios-purple/10 text-ios-purple'}">
+                        <i class="fa-solid ${h.type === 'IMPORT' ? 'fa-arrow-down' : h.type === 'EXPORT' ? 'fa-arrow-up' : 'fa-clipboard-check'} text-xs"></i>
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between">
-                            <p class="font-semibold text-slate-800 truncate">${h.itemName || '-'}</p>
-                            <span class="text-[10px] text-slate-400">${h.timestamp ? new Date(h.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '-'}</span>
+                            <p class="font-bold text-slate-800 truncate">${h.itemName || '-'}</p>
+                            <span class="text-[10px] text-slate-400 font-medium">${h.timestamp ? new Date(h.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '-'}</span>
                         </div>
-                        <p class="text-slate-500 mt-0.5">${h.type === 'IMPORT' ? 'Nhập' : h.type === 'EXPORT' ? 'Xuất' : 'Kiểm kê'}: <strong class="text-slate-700">${h.qty}</strong> | ${h.partner || 'Đối tác'}</p>
+                        <p class="text-[11px] text-slate-500 mt-0.5">${h.type === 'IMPORT' ? 'Nhập' : h.type === 'EXPORT' ? 'Xuất' : 'Điều chỉnh'}: <strong class="text-slate-800">${h.qty}</strong> | ${h.performer || 'NV'}</p>
                     </div>
                 </div>
             `).join('');
         }
 
-        // 5. INVENTORY TABLE RENDER & MANAGEMENT
+        // 5. INVENTORY MANAGEMENT
         function renderInventoryTable() {
             const tbody = document.getElementById('inventory-table-body');
             const search = document.getElementById('inventory-search')?.value.toLowerCase().trim() || '';
@@ -990,39 +1070,39 @@
             });
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="px-5 py-8 text-center text-slate-400 italic">Không tìm thấy vật tư nào phù hợp.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="px-5 py-8 text-center text-slate-400 italic">Không tìm thấy vật tư trùng khớp.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = filtered.map(item => {
                 const qty = item.quantity || 0;
                 const min = item.minStock || 0;
-                let statusBadge = `<span class="px-2 py-1 rounded-md text-xs font-semibold bg-emerald-100 text-emerald-800">An toàn</span>`;
-                if (qty === 0) statusBadge = `<span class="px-2 py-1 rounded-md text-xs font-semibold bg-rose-100 text-rose-800">Hết hàng</span>`;
-                else if (qty <= min) statusBadge = `<span class="px-2 py-1 rounded-md text-xs font-semibold bg-amber-100 text-amber-800">Sắp hết</span>`;
+                let statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-ios-green/10 text-ios-green">An toàn</span>`;
+                if (qty === 0) statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-ios-red/10 text-ios-red">Hết hàng</span>`;
+                else if (qty <= min) statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-ios-orange/10 text-ios-orange">Sắp hết</span>`;
 
                 return `
-                    <tr class="hover:bg-slate-50 transition-colors">
+                    <tr class="hover:bg-slate-100/50 transition-colors text-xs">
                         <td class="px-5 py-3.5 font-mono font-bold text-slate-700">${item.code || '-'}</td>
-                        <td class="px-5 py-3.5 font-semibold text-slate-800">${item.name || '-'}</td>
-                        <td class="px-5 py-3.5 text-slate-600"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-xs font-bold">${item.category || 'OTHER'}</span></td>
+                        <td class="px-5 py-3.5 font-semibold text-slate-900">${item.name || '-'}</td>
+                        <td class="px-5 py-3.5"><span class="bg-slate-200/60 text-slate-700 px-2 py-0.5 rounded-md font-bold text-[10px]">${item.category || 'OTHER'}</span></td>
                         <td class="px-5 py-3.5 text-center text-slate-600">${item.unit || 'Cái'}</td>
                         <td class="px-5 py-3.5 text-right font-bold text-slate-900">${qty.toLocaleString()}</td>
                         <td class="px-5 py-3.5 text-right font-mono text-slate-600">${(item.price || 0).toLocaleString()} ₫</td>
                         <td class="px-5 py-3.5 text-center">${statusBadge}</td>
                         <td class="px-5 py-3.5 text-right">
-                            <div class="flex items-center justify-end space-x-2">
-                                <button onclick="quickSelectImport('${item.id}')" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors flex items-center justify-center shadow-sm" title="Nhập kho">
-                                    <i class="fa-solid fa-plus text-xs"></i>
+                            <div class="flex items-center justify-end space-x-1.5">
+                                <button onclick="quickSelectImport('${item.id}')" class="w-7 h-7 bg-ios-green text-white rounded-xl transition-transform ios-btn-active flex items-center justify-center shadow-ios-sm" title="Nhập kho">
+                                    <i class="fa-solid fa-plus text-[10px]"></i>
                                 </button>
-                                <button onclick="quickSelectExport('${item.id}')" class="w-7 h-7 bg-sky-600 hover:bg-sky-700 text-white rounded-lg transition-colors flex items-center justify-center shadow-sm" title="Xuất kho">
-                                    <i class="fa-solid fa-minus text-xs"></i>
+                                <button onclick="quickSelectExport('${item.id}')" class="w-7 h-7 bg-ios-blue text-white rounded-xl transition-transform ios-btn-active flex items-center justify-center shadow-ios-sm" title="Xuất kho">
+                                    <i class="fa-solid fa-minus text-[10px]"></i>
                                 </button>
-                                <button onclick="openItemModal('${item.id}')" class="text-slate-400 hover:text-navy-900 transition-colors p-1.5 rounded-lg hover:bg-slate-100" title="Sửa">
-                                    <i class="fa-solid fa-pen-to-square"></i>
+                                <button onclick="openItemModal('${item.id}')" class="w-7 h-7 bg-slate-200/60 hover:bg-slate-300/60 text-slate-700 rounded-xl transition-colors flex items-center justify-center" title="Sửa">
+                                    <i class="fa-solid fa-pen-to-square text-[10px]"></i>
                                 </button>
-                                <button onclick="deleteItem('${item.id}')" class="text-slate-400 hover:text-rose-600 transition-colors p-1.5 rounded-lg hover:bg-slate-100" title="Xóa">
-                                    <i class="fa-solid fa-trash-can"></i>
+                                <button onclick="deleteItem('${item.id}')" class="w-7 h-7 bg-ios-red/10 hover:bg-ios-red hover:text-white text-ios-red rounded-xl transition-colors flex items-center justify-center" title="Xóa">
+                                    <i class="fa-solid fa-trash-can text-[10px]"></i>
                                 </button>
                             </div>
                         </td>
@@ -1031,7 +1111,7 @@
             }).join('');
         }
 
-        // 6. ITEM MODAL & REALTIME SAVE
+        // Modal Helpers
         function openItemModal(itemId = null) {
             const modal = document.getElementById('modal-item');
             const title = document.getElementById('modal-item-title');
@@ -1041,7 +1121,7 @@
             if (itemId) {
                 const item = inventoryData.find(i => i.id === itemId);
                 if (item) {
-                    title.innerHTML = `<i class="fa-solid fa-pen-to-square text-emerald-400"></i><span>Sửa Thông Tin Vật Tư</span>`;
+                    title.innerHTML = `<i class="fa-solid fa-pen-to-square text-ios-blue"></i><span>Sửa Thông Tin Vật Tư</span>`;
                     document.getElementById('item-id').value = item.id;
                     document.getElementById('item-category').value = item.category || 'ME';
                     document.getElementById('item-code').value = item.code || '';
@@ -1052,7 +1132,7 @@
                     document.getElementById('item-price').value = item.price || 0;
                 }
             } else {
-                title.innerHTML = `<i class="fa-solid fa-box text-emerald-400"></i><span>Thêm Vật Tư Mới</span>`;
+                title.innerHTML = `<i class="fa-solid fa-box text-ios-blue"></i><span>Thêm Vật Tư Mới</span>`;
                 document.getElementById('item-id').value = '';
                 generateCodeForCategory();
             }
@@ -1093,10 +1173,10 @@
             try {
                 if (id) {
                     await db.collection("inventory").doc(id).set(itemData, { merge: true });
-                    showToast('Đã cập nhật thông tin vật tư!');
+                    showToast('Cập nhật vật tư thành công!');
                 } else {
                     const docRef = await db.collection("inventory").add(itemData);
-                    showToast(`Đã thêm vật tư mới [${code}] ${name}!`);
+                    showToast(`Đã thêm mới [${code}] ${name}!`);
                     if (currentTab === 'import') selectSmartItem('import', docRef.id);
                 }
                 closeItemModal();
@@ -1106,17 +1186,17 @@
         }
 
         async function deleteItem(itemId) {
-            if (confirm('Bạn có chắc chắn muốn xóa vật tư này khỏi hệ thống Firestore?')) {
+            if (confirm('Xác nhận xóa vật tư khỏi cơ sở dữ liệu Cloud?')) {
                 try {
                     await db.collection("inventory").doc(itemId).delete();
-                    showToast('Đã xóa vật tư khỏi cơ sở dữ liệu cloud!');
+                    showToast('Đã xóa vật tư!');
                 } catch (error) {
-                    showToast('Lỗi khi xóa vật tư: ' + error.message, 'error');
+                    showToast('Lỗi xóa vật tư: ' + error.message, 'error');
                 }
             }
         }
 
-        // 7. SMART ITEM SEARCH & STAFF AUTOCOMPLETE
+        // Smart Autocomplete
         function searchSmart(type) {
             const input = document.getElementById(`${type}-search`).value.toLowerCase();
             const dropdown = document.getElementById(`${type}-dropdown`);
@@ -1131,15 +1211,15 @@
             );
 
             if (matches.length === 0) {
-                dropdown.innerHTML = `<div class="p-3 text-slate-400 text-xs text-center">Không tìm thấy vật tư trùng khớp</div>`;
+                dropdown.innerHTML = `<div class="p-3 text-slate-400 text-xs text-center">Không tìm thấy vật tư</div>`;
             } else {
                 dropdown.innerHTML = matches.map(i => `
-                    <div onclick="selectSmartItem('${type}', '${i.id}')" class="p-3 hover:bg-slate-50 cursor-pointer transition-colors flex justify-between items-center">
+                    <div onclick="selectSmartItem('${type}', '${i.id}')" class="p-3 hover:bg-slate-100/80 cursor-pointer transition-colors flex justify-between items-center text-xs">
                         <div>
-                            <span class="text-xs bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-mono font-bold">${i.code}</span>
-                            <span class="text-sm text-slate-800 font-medium ml-2">${i.name}</span>
+                            <span class="bg-ios-blue text-white font-mono font-bold px-1.5 py-0.5 rounded">${i.code}</span>
+                            <span class="text-slate-800 font-semibold ml-2">${i.name}</span>
                         </div>
-                        <span class="text-xs text-slate-500">Tồn: <strong class="text-emerald-600">${i.quantity}</strong> ${i.unit}</span>
+                        <span class="text-slate-500">Tồn: <strong class="text-ios-blue font-bold">${i.quantity}</strong> ${i.unit}</span>
                     </div>
                 `).join('');
             }
@@ -1183,11 +1263,11 @@
             );
 
             if (matches.length === 0) {
-                dropdown.innerHTML = `<div class="p-3 text-xs text-slate-400 text-center">Không tìm thấy nhân sự</div>`;
+                dropdown.innerHTML = `<div class="p-3 text-xs text-slate-400 text-center">Không tìm thấy cán bộ</div>`;
             } else {
                 dropdown.innerHTML = matches.map(emp => `
-                    <div onclick="selectStaff('${inputId}', '${emp}')" class="p-2.5 hover:bg-slate-50 cursor-pointer text-xs font-medium text-slate-700 flex items-center space-x-2">
-                        <i class="fa-solid fa-user-gear text-slate-400"></i>
+                    <div onclick="selectStaff('${inputId}', '${emp}')" class="p-2.5 hover:bg-slate-100/80 cursor-pointer text-xs font-semibold text-slate-700 flex items-center space-x-2">
+                        <i class="fa-solid fa-user text-slate-400 text-[10px]"></i>
                         <span>${emp}</span>
                     </div>
                 `).join('');
@@ -1213,7 +1293,7 @@
             });
         }
 
-        // 8. IMPORT & EXPORT ACTIONS
+        // 6. IMPORT / EXPORT TRANSACTIONS
         async function handleImport(e) {
             e.preventDefault();
             const itemId = document.getElementById('import-selected-item-id').value;
@@ -1241,23 +1321,20 @@
                 qty: qty,
                 partner: supplier || 'Nhà cung cấp',
                 performer: performer,
-                note: note || 'Nhập kho thủ công'
+                note: note || 'Nhập kho'
             };
 
             try {
                 const batch = db.batch();
-                const itemRef = db.collection("inventory").doc(itemId);
-                batch.set(itemRef, updateData, { merge: true });
-
-                const historyRef = db.collection("history").doc();
-                batch.set(historyRef, historyRecord);
-
+                batch.set(db.collection("inventory").doc(itemId), updateData, { merge: true });
+                batch.set(db.collection("history").doc(), historyRecord);
                 await batch.commit();
-                showToast(`Nhập kho thành công +${qty} ${item.unit} ${item.name}!`);
+
+                showToast(`Đã nhập +${qty} ${item.unit} ${item.name}!`);
                 document.getElementById('form-import').reset();
                 document.getElementById('import-selected-badge').classList.add('hidden');
             } catch (error) {
-                showToast('Lỗi đồng bộ nhập kho: ' + error.message, 'error');
+                showToast('Lỗi nhập kho: ' + error.message, 'error');
             }
         }
 
@@ -1272,12 +1349,12 @@
 
             const item = inventoryData.find(i => i.id === itemId);
             if (!item) {
-                showToast('Vui lòng chọn vật tư từ danh sách gợi ý!', 'error');
+                showToast('Vui lòng chọn vật tư!', 'error');
                 return;
             }
 
             if (qty > (item.quantity || 0)) {
-                showToast(`Số lượng xuất (${qty}) vượt quá tồn kho hiện tại (${item.quantity})!`, 'error');
+                showToast(`Xuất (${qty}) vượt tồn kho (${item.quantity})!`, 'error');
                 return;
             }
 
@@ -1290,42 +1367,254 @@
                 qty: qty,
                 partner: receiver + (purpose ? ` (${purpose})` : ''),
                 performer: performer,
-                note: note || 'Xuất kho sử dụng'
+                note: note || 'Xuất kho'
             };
 
             try {
                 const batch = db.batch();
-                const itemRef = db.collection("inventory").doc(itemId);
-                batch.set(itemRef, { quantity: newQty }, { merge: true });
-
-                const historyRef = db.collection("history").doc();
-                batch.set(historyRef, historyRecord);
-
+                batch.set(db.collection("inventory").doc(itemId), { quantity: newQty }, { merge: true });
+                batch.set(db.collection("history").doc(), historyRecord);
                 await batch.commit();
-                showToast(`Xuất kho thành công -${qty} ${item.unit} ${item.name}!`);
+
+                showToast(`Đã xuất -${qty} ${item.unit} ${item.name}!`);
                 document.getElementById('form-export').reset();
                 document.getElementById('export-selected-badge').classList.add('hidden');
             } catch (error) {
-                showToast('Lỗi đồng bộ xuất kho: ' + error.message, 'error');
+                showToast('Lỗi xuất kho: ' + error.message, 'error');
             }
         }
 
-        // 9. EXCEL BATCH IMPORT
+        // 7. STOCKTAKE & EXCEL FEATURES
+        function openStocktakeModal() {
+            if (activeStocktake) {
+                showToast('Đang có phiếu kiểm kê chưa chốt!', 'error');
+                return;
+            }
+            document.getElementById('stocktake-performer-input').value = '';
+            document.getElementById('modal-stocktake').classList.remove('hidden');
+        }
+
+        function closeStocktakeModal() {
+            document.getElementById('modal-stocktake').classList.add('hidden');
+        }
+
+        async function confirmCreateStocktake() {
+            const performer = document.getElementById('stocktake-performer-input').value.trim();
+            if (!performer) {
+                showToast('Vui lòng chọn người thực hiện!', 'error');
+                return;
+            }
+
+            const newStocktake = {
+                createdAt: new Date().toISOString(),
+                performer: performer,
+                status: 'OPEN',
+                items: inventoryData.map(i => ({
+                    id: i.id,
+                    code: i.code,
+                    name: i.name,
+                    unit: i.unit,
+                    systemQty: i.quantity || 0,
+                    actualQty: i.quantity || 0
+                }))
+            };
+
+            try {
+                await db.collection("stocktakes").add(newStocktake);
+                closeStocktakeModal();
+                showToast('Bắt đầu đợt kiểm kê mới!');
+            } catch (error) {
+                showToast('Lỗi tạo phiếu: ' + error.message, 'error');
+            }
+        }
+
+        function renderStocktakeUI() {
+            const container = document.getElementById('stocktake-container');
+            const createBtn = document.getElementById('btn-create-stocktake');
+            const exportExcelBtn = document.getElementById('btn-export-stocktake-excel');
+            const importExcelBtn = document.getElementById('btn-import-stocktake-excel');
+            const finalizeBtn = document.getElementById('btn-finalize-stocktake');
+
+            if (!activeStocktake) {
+                createBtn.classList.remove('hidden');
+                exportExcelBtn.classList.add('hidden');
+                importExcelBtn.classList.add('hidden');
+                finalizeBtn.classList.add('hidden');
+                container.innerHTML = `
+                    <div class="p-8 text-center text-slate-400">
+                        <i class="fa-solid fa-clipboard-list text-4xl mb-3 opacity-30"></i>
+                        <p class="text-sm font-medium">Chưa có phiếu kiểm kê nào đang mở.</p>
+                        <p class="text-xs mt-1">Hãy bấm "Tạo Phiếu Kiểm Kê" để bắt đầu quy trình đối soát.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            createBtn.classList.add('hidden');
+            exportExcelBtn.classList.remove('hidden');
+            importExcelBtn.classList.remove('hidden');
+            finalizeBtn.classList.remove('hidden');
+
+            container.innerHTML = `
+                <div class="p-4 bg-slate-100/60 border-b border-slate-200/50 flex justify-between items-center text-xs text-slate-600">
+                    <div>Tạo lúc: <span class="font-bold text-slate-800">${new Date(activeStocktake.createdAt).toLocaleString('vi-VN')}</span></div>
+                    <div>Người thực hiện: <span class="font-bold text-ios-purple">${activeStocktake.performer}</span></div>
+                </div>
+                <div class="overflow-x-auto max-h-[500px] custom-scrollbar">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-100/80 text-slate-500 uppercase text-[11px] font-bold sticky top-0 z-10 border-b border-slate-200/50">
+                            <tr>
+                                <th class="p-3.5">Mã VT</th>
+                                <th class="p-3.5">Tên Vật Tư</th>
+                                <th class="p-3.5 text-right">Tồn Sổ Sách</th>
+                                <th class="p-3.5 text-right">Thực Tế Đếm</th>
+                                <th class="p-3.5 text-right">Chênh Lệch</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200/40">
+                            ${activeStocktake.items.map((item, idx) => {
+                                const diff = (item.actualQty || 0) - (item.systemQty || 0);
+                                return `
+                                    <tr class="hover:bg-slate-100/50 transition-colors text-xs">
+                                        <td class="p-3.5 font-mono text-ios-blue font-bold">${item.code}</td>
+                                        <td class="p-3.5 text-slate-900 font-semibold">${item.name}</td>
+                                        <td class="p-3.5 text-right text-slate-600">${item.systemQty} ${item.unit}</td>
+                                        <td class="p-3.5 text-right">
+                                            <input type="number" value="${item.actualQty}" onchange="updateStocktakeQty(${idx}, this.value)" class="w-24 text-right px-2 py-1 bg-white border border-slate-300 rounded-xl text-xs text-ios-blue font-bold focus:ring-2 focus:ring-ios-blue outline-none shadow-ios-sm">
+                                        </td>
+                                        <td class="p-3.5 text-right font-bold ${diff < 0 ? 'text-ios-red' : diff > 0 ? 'text-ios-orange' : 'text-slate-400'}">
+                                            ${diff > 0 ? '+' + diff : diff}
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        async function updateStocktakeQty(index, value) {
+            if (!activeStocktake) return;
+            const qty = parseInt(value, 10) || 0;
+            activeStocktake.items[index].actualQty = qty;
+
+            try {
+                await db.collection("stocktakes").doc(activeStocktake.id).set(activeStocktake, { merge: true });
+            } catch (error) {
+                showToast('Lỗi lưu số lượng đếm: ' + error.message, 'error');
+            }
+        }
+
+        // Export Stocktake Template Excel
+        function exportStocktakeTemplateExcel() {
+            if (!activeStocktake) return;
+
+            const excelData = activeStocktake.items.map(item => ({
+                "ID Vật Tư": item.id,
+                "Mã VT": item.code,
+                "Tên Vật Tư": item.name,
+                "Đơn Vị Tính": item.unit,
+                "Tồn Sổ Sách": item.systemQty,
+                "Số Lượng Thực Tế Đếm": item.actualQty
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(excelData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "KiemKeKho");
+            XLSX.writeFile(wb, `Kiem_Ke_Kho_${activeStocktake.performer}_${new Date().toISOString().slice(0,10)}.xlsx`);
+            showToast('Đã xuất file Excel kiểm kê thành công!');
+        }
+
+        // Import Stocktake Excel
+        async function importStocktakeExcel(event) {
+            if (!activeStocktake) return;
+            const file = event.target.files?.[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+                    const sheetName = workbook.SheetNames[0];
+                    const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: '' });
+
+                    if (!rows.length) throw new Error("File Excel không có dữ liệu!");
+
+                    let updatedCount = 0;
+                    rows.forEach(row => {
+                        const id = String(row["ID Vật Tư"] || row["id"] || '').trim();
+                        const code = String(row["Mã VT"] || row["Mã"] || '').trim();
+                        const actualQty = parseInt(row["Số Lượng Thực Tế Đếm"] || row["Thực tế"] || row["Thực Tế"] || 0, 10);
+
+                        const targetItem = activeStocktake.items.find(i => (id && i.id === id) || (code && i.code === code));
+                        if (targetItem && !isNaN(actualQty)) {
+                            targetItem.actualQty = actualQty;
+                            updatedCount++;
+                        }
+                    });
+
+                    await db.collection("stocktakes").doc(activeStocktake.id).set(activeStocktake, { merge: true });
+                    showToast(`Đã nạp thành công ${updatedCount} mục từ Excel vào phiếu kiểm kê!`);
+                } catch (error) {
+                    showToast('Lỗi đọc file Excel kiểm kê: ' + error.message, 'error');
+                } finally {
+                    event.target.value = '';
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        async function finalizeStocktake() {
+            if (!activeStocktake) return;
+            if (!confirm('Xác nhận CHỐT PHIẾU KIỂM KÊ và cập nhật tồn kho thực tế?')) return;
+
+            try {
+                const batch = db.batch();
+                const now = new Date().toISOString();
+
+                activeStocktake.items.forEach(item => {
+                    const diff = item.actualQty - item.systemQty;
+                    if (diff !== 0) {
+                        batch.set(db.collection("inventory").doc(item.id), { quantity: item.actualQty }, { merge: true });
+                        batch.set(db.collection("history").doc(), {
+                            timestamp: now,
+                            type: 'ADJUST',
+                            itemCode: item.code,
+                            itemName: item.name,
+                            qty: Math.abs(diff),
+                            partner: 'Đợt Kiểm Kê Kho',
+                            performer: activeStocktake.performer,
+                            note: `Cân bằng kho (${diff > 0 ? '+' + diff : diff})`
+                        });
+                    }
+                });
+
+                batch.set(db.collection("stocktakes").doc(activeStocktake.id), { status: 'CLOSED', closedAt: now }, { merge: true });
+                await batch.commit();
+
+                showToast('Đã chốt đợt kiểm kê & cân bằng kho thành công!');
+            } catch (error) {
+                showToast('Lỗi chốt phiếu: ' + error.message, 'error');
+            }
+        }
+
+        // Excel Import Template Generator for Warehouse Batch Import
         function downloadImportTemplate() {
             const templateData = [
                 {
                     "Danh mục vật tư (ME/BM/AC/ROOM/OTHER)": "ME",
-                    "Tên vật tư": "CB Té tép 20A Schneider",
-                    "Số lượng nhập": 10,
-                    "Đơn giá nhập (VNĐ)": 85000,
+                    "Tên vật tư": "Aptomat 2P 32A Schneider",
+                    "Số lượng nhập": 15,
+                    "Đơn giá nhập (VNĐ)": 120000,
                     "Nhà cung cấp / Nguồn nhập": "Công ty Bách Khoa",
-                    "Người thực hiện": "Nguyễn Văn A",
-                    "Ghi chú": "Nhập đợt 1"
+                    "Người thực hiện": "Nguyễn Văn CHÂU",
+                    "Ghi chú": "Nhập kho đợt 1"
                 }
             ];
             const ws = XLSX.utils.json_to_sheet(templateData);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "nhap kho");
+            XLSX.utils.book_append_sheet(wb, ws, "MauNhapKho");
             XLSX.writeFile(wb, "Mau_Nhap_Kho_Ky_Thuat.xlsx");
         }
 
@@ -1340,7 +1629,7 @@
                     const sheetName = workbook.SheetNames[0];
                     const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: '' });
 
-                    if (!rows.length) throw new Error("File Excel không có dữ liệu!");
+                    if (!rows.length) throw new Error("File Excel rỗng!");
 
                     const validCategories = ['ME', 'BM', 'AC', 'ROOM', 'OTHER'];
                     const CHUNK_SIZE = 200;
@@ -1376,7 +1665,7 @@
                                 itemRef = db.collection("inventory").doc();
                                 const itemsInCat = inventoryData.filter(i => i.category === category);
                                 const nextCode = `${category}-${String(itemsInCat.length + 1).padStart(4, '0')}`;
-                                const newItemData = {
+                                batch.set(itemRef, {
                                     code: nextCode,
                                     name: name,
                                     category: category,
@@ -1384,12 +1673,10 @@
                                     quantity: qty,
                                     minStock: 5,
                                     price: price
-                                };
-                                batch.set(itemRef, newItemData);
+                                });
                             }
 
-                            const historyRef = db.collection("history").doc();
-                            batch.set(historyRef, {
+                            batch.set(db.collection("history").doc(), {
                                 timestamp: importedAt,
                                 type: 'IMPORT',
                                 itemCode: item ? item.code : 'TỰ ĐỘNG',
@@ -1406,9 +1693,9 @@
                         await batch.commit();
                     }
 
-                    showToast(`Nạp Excel thành công: Đã đồng bộ ${importedCount} dòng dữ liệu lên Cloud!`);
+                    showToast(`Đã đồng bộ ${importedCount} mục từ Excel lên Cloud!`);
                 } catch (error) {
-                    showToast('Lỗi đọc file Excel: ' + error.message, 'error');
+                    showToast('Lỗi nạp Excel: ' + error.message, 'error');
                 } finally {
                     event.target.value = '';
                 }
@@ -1416,161 +1703,7 @@
             reader.readAsArrayBuffer(file);
         }
 
-        // 10. STOCKTAKE REALTIME MANAGEMENT
-        function openStocktakeModal() {
-            if (activeStocktake) {
-                showToast('Đang có một phiếu kiểm kê chưa chốt. Hãy hoàn thành phiếu hiện tại!', 'error');
-                return;
-            }
-            document.getElementById('stocktake-performer-input').value = '';
-            document.getElementById('modal-stocktake').classList.remove('hidden');
-        }
-
-        function closeStocktakeModal() {
-            document.getElementById('modal-stocktake').classList.add('hidden');
-        }
-
-        async function confirmCreateStocktake() {
-            const performer = document.getElementById('stocktake-performer-input').value.trim();
-            if (!performer) {
-                showToast('Vui lòng nhập hoặc chọn người thực hiện!', 'error');
-                return;
-            }
-
-            const newStocktake = {
-                createdAt: new Date().toISOString(),
-                performer: performer,
-                status: 'OPEN',
-                items: inventoryData.map(i => ({
-                    id: i.id,
-                    code: i.code,
-                    name: i.name,
-                    unit: i.unit,
-                    systemQty: i.quantity || 0,
-                    actualQty: i.quantity || 0
-                }))
-            };
-
-            try {
-                await db.collection("stocktakes").add(newStocktake);
-                closeStocktakeModal();
-                showToast('Khởi tạo phiếu kiểm kê mới thành công!');
-            } catch (error) {
-                showToast('Lỗi tạo phiếu kiểm kê: ' + error.message, 'error');
-            }
-        }
-
-        function renderStocktakeUI() {
-            const container = document.getElementById('stocktake-container');
-            const createBtn = document.getElementById('btn-create-stocktake');
-            const finalizeBtn = document.getElementById('btn-finalize-stocktake');
-
-            if (!activeStocktake) {
-                createBtn.classList.remove('hidden');
-                finalizeBtn.classList.add('hidden');
-                container.innerHTML = `
-                    <div class="p-8 text-center text-slate-400">
-                        <i class="fa-solid fa-clipboard-list text-4xl mb-3 opacity-30"></i>
-                        <p>Chưa có phiếu kiểm kê nào đang hoạt động.</p>
-                        <p class="text-xs mt-1">Bấm nút "Tạo Phiếu Kiểm Kê Mới" để bắt đầu quá trình đếm kho.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            createBtn.classList.add('hidden');
-            finalizeBtn.classList.remove('hidden');
-
-            container.innerHTML = `
-                <div class="p-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center text-xs text-slate-600">
-                    <div>Ngày tạo: <span class="font-bold text-slate-800">${new Date(activeStocktake.createdAt).toLocaleString('vi-VN')}</span></div>
-                    <div>Người thực hiện: <span class="font-bold text-amber-600">${activeStocktake.performer}</span></div>
-                </div>
-                <div class="overflow-x-auto max-h-[500px] custom-scrollbar">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 text-slate-600 uppercase text-xs sticky top-0 z-10 border-b border-slate-200">
-                            <tr>
-                                <th class="p-3">Mã VT</th>
-                                <th class="p-3">Tên Vật Tư</th>
-                                <th class="p-3 text-right">Tồn Sổ Sách</th>
-                                <th class="p-3 text-right">Thực Tế Đếm</th>
-                                <th class="p-3 text-right">Chênh Lệch</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            ${activeStocktake.items.map((item, idx) => {
-                                const diff = (item.actualQty || 0) - (item.systemQty || 0);
-                                return `
-                                    <tr class="hover:bg-slate-50">
-                                        <td class="p-3 font-mono text-emerald-700 font-bold">${item.code}</td>
-                                        <td class="p-3 text-slate-800 font-medium">${item.name}</td>
-                                        <td class="p-3 text-right text-slate-600">${item.systemQty} ${item.unit}</td>
-                                        <td class="p-3 text-right">
-                                            <input type="number" value="${item.actualQty}" onchange="updateStocktakeQty(${idx}, this.value)" class="w-24 text-right px-2 py-1 bg-white border border-slate-200 rounded text-sm text-emerald-600 font-bold focus:ring-2 focus:ring-emerald-500/20 outline-none">
-                                        </td>
-                                        <td class="p-3 text-right font-bold ${diff < 0 ? 'text-rose-600' : diff > 0 ? 'text-amber-600' : 'text-slate-400'}">
-                                            ${diff > 0 ? '+' + diff : diff}
-                                        </td>
-                                    </tr>
-                                `;
-                            }).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-        }
-
-        async function updateStocktakeQty(index, value) {
-            if (!activeStocktake) return;
-            const qty = parseInt(value, 10) || 0;
-            activeStocktake.items[index].actualQty = qty;
-
-            try {
-                await db.collection("stocktakes").doc(activeStocktake.id).set(activeStocktake, { merge: true });
-            } catch (error) {
-                showToast('Lỗi lưu cập nhật số lượng kiểm kê: ' + error.message, 'error');
-            }
-        }
-
-        async function finalizeStocktake() {
-            if (!activeStocktake) return;
-            if (!confirm('Bạn có chắc chắn muốn CHỐT PHIẾU KIỂM KÊ? Dữ liệu tồn kho thực tế sẽ được điều chỉnh tương ứng trên toàn hệ thống!')) return;
-
-            try {
-                const batch = db.batch();
-                const now = new Date().toISOString();
-
-                activeStocktake.items.forEach(item => {
-                    const diff = item.actualQty - item.systemQty;
-                    if (diff !== 0) {
-                        const itemRef = db.collection("inventory").doc(item.id);
-                        batch.set(itemRef, { quantity: item.actualQty }, { merge: true });
-
-                        const historyRef = db.collection("history").doc();
-                        batch.set(historyRef, {
-                            timestamp: now,
-                            type: 'ADJUST',
-                            itemCode: item.code,
-                            itemName: item.name,
-                            qty: Math.abs(diff),
-                            partner: 'Kiểm Kê Kho',
-                            performer: activeStocktake.performer,
-                            note: `Điều chỉnh kiểm kê (${diff > 0 ? '+' + diff : diff})`
-                        });
-                    }
-                });
-
-                const stocktakeRef = db.collection("stocktakes").doc(activeStocktake.id);
-                batch.set(stocktakeRef, { status: 'CLOSED', closedAt: now }, { merge: true });
-
-                await batch.commit();
-                showToast('Đã chốt phiếu kiểm kê và cân bằng dữ liệu kho thành công!');
-            } catch (error) {
-                showToast('Lỗi chốt phiếu kiểm kê: ' + error.message, 'error');
-            }
-        }
-
-        // 11. HISTORY & TRACE TABLE LOGIC
+        // 8. HISTORY & TRACE
         function renderHistoryTable() {
             const tbody = document.getElementById('history-tbody');
             const search = document.getElementById('history-search')?.value.toLowerCase().trim() || '';
@@ -1585,33 +1718,33 @@
             });
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400">Chưa có lịch sử giao dịch nào</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400">Không tìm thấy giao dịch.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = filtered.map(h => {
-                let badgeClass = "bg-emerald-100 text-emerald-800";
+                let badgeClass = "bg-ios-green/10 text-ios-green";
                 let typeLabel = "NHẬP KHO";
                 if (h.type === 'EXPORT') {
-                    badgeClass = "bg-sky-100 text-sky-800";
+                    badgeClass = "bg-ios-blue/10 text-ios-blue";
                     typeLabel = "XUẤT KHO";
                 } else if (h.type === 'ADJUST') {
-                    badgeClass = "bg-amber-100 text-amber-800";
+                    badgeClass = "bg-ios-purple/10 text-ios-purple";
                     typeLabel = "KIỂM KÊ";
                 }
 
                 return `
-                    <tr class="hover:bg-slate-50 transition-colors">
-                        <td class="px-5 py-3.5 text-slate-500 text-xs">${h.timestamp ? new Date(h.timestamp).toLocaleString('vi-VN') : '-'}</td>
-                        <td class="px-5 py-3.5"><span class="px-2 py-0.5 rounded text-xs font-bold ${badgeClass}">${typeLabel}</span></td>
-                        <td class="px-5 py-3.5 font-mono text-emerald-700 font-bold">${h.itemCode || '-'}</td>
-                        <td class="px-5 py-3.5 font-semibold text-slate-800">${h.itemName || '-'}</td>
-                        <td class="px-5 py-3.5 text-right font-bold ${h.type === 'IMPORT' ? 'text-emerald-600' : h.type === 'EXPORT' ? 'text-sky-600' : 'text-amber-600'}">
+                    <tr class="hover:bg-slate-100/50 transition-colors text-xs">
+                        <td class="px-5 py-3.5 text-slate-500">${h.timestamp ? new Date(h.timestamp).toLocaleString('vi-VN') : '-'}</td>
+                        <td class="px-5 py-3.5"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeClass}">${typeLabel}</span></td>
+                        <td class="px-5 py-3.5 font-mono text-ios-blue font-bold">${h.itemCode || '-'}</td>
+                        <td class="px-5 py-3.5 font-semibold text-slate-900">${h.itemName || '-'}</td>
+                        <td class="px-5 py-3.5 text-right font-bold ${h.type === 'IMPORT' ? 'text-ios-green' : h.type === 'EXPORT' ? 'text-ios-blue' : 'text-ios-purple'}">
                             ${h.type === 'IMPORT' ? '+' : h.type === 'EXPORT' ? '-' : ''}${h.qty}
                         </td>
-                        <td class="px-5 py-3.5 text-slate-600 text-xs">${h.partner || '-'}</td>
-                        <td class="px-5 py-3.5 text-slate-700 text-xs font-medium">${h.performer || '-'}</td>
-                        <td class="px-5 py-3.5 text-slate-500 text-xs italic">${h.note || '-'}</td>
+                        <td class="px-5 py-3.5 text-slate-600">${h.partner || '-'}</td>
+                        <td class="px-5 py-3.5 text-slate-800 font-semibold">${h.performer || '-'}</td>
+                        <td class="px-5 py-3.5 text-slate-500 italic">${h.note || '-'}</td>
                     </tr>
                 `;
             }).join('');
@@ -1625,9 +1758,9 @@
             targetSelect.innerHTML = '';
 
             if (mode === 'item') {
-                targetLabel.innerText = 'Chọn Vật tư kỹ thuật truy xuất';
+                targetLabel.innerText = 'Chọn Vật tư kỹ thuật';
                 if (inventoryData.length === 0) {
-                    targetSelect.innerHTML = '<option value="">(Chưa có vật tư nào trong kho)</option>';
+                    targetSelect.innerHTML = '<option value="">(Chưa có vật tư)</option>';
                 } else {
                     inventoryData.forEach(item => {
                         const opt = document.createElement('option');
@@ -1637,10 +1770,10 @@
                     });
                 }
             } else if (mode === 'performer') {
-                targetLabel.innerText = 'Chọn Người thực hiện / Nhân viên';
+                targetLabel.innerText = 'Chọn Người thực hiện';
                 const performers = Array.from(new Set(historyData.map(h => h.performer).filter(Boolean)));
                 if (performers.length === 0) {
-                    targetSelect.innerHTML = '<option value="">(Chưa có dữ liệu người thực hiện)</option>';
+                    targetSelect.innerHTML = '<option value="">(Chưa có nhân sự)</option>';
                 } else {
                     performers.forEach(p => {
                         const opt = document.createElement('option');
@@ -1662,7 +1795,7 @@
 
             if (!targetVal) {
                 summaryCard.classList.add('hidden');
-                tbody.innerHTML = `<tr><td colspan="7" class="px-5 py-10 text-center text-slate-400 italic">Vui lòng chọn đối tượng hợp lệ để truy xuất.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="px-5 py-10 text-center text-slate-400 italic">Vui lòng chọn đối tượng để truy xuất.</td></tr>`;
                 currentTraceResults = [];
                 return;
             }
@@ -1676,7 +1809,7 @@
                 const item = inventoryData.find(i => i.code === targetVal);
                 badgeText = 'TRUY XUẤT VẬT TƯ';
                 title = item ? `[${item.code}] ${item.name}` : targetVal;
-                subtitle = item ? `Danh mục: ${item.category} | Đơn vị: ${item.unit} | Đơn giá: ${item.price.toLocaleString()} ₫ | Tồn kho hiện tại: ${item.quantity}` : '';
+                subtitle = item ? `Danh mục: ${item.category} | Đơn vị: ${item.unit} | Tồn hiện tại: ${item.quantity}` : '';
 
                 logs = historyData.filter(h => h.itemCode === targetVal);
                 document.getElementById('trace-stat-4-label').innerText = 'Tồn kho hiện tại:';
@@ -1684,7 +1817,7 @@
             } else {
                 badgeText = 'TRUY XUẤT NHÂN VIÊN';
                 title = `Nhân viên: ${targetVal}`;
-                subtitle = `Toàn bộ giao dịch nhập / xuất được thực hiện bởi ${targetVal}`;
+                subtitle = `Nhật ký giao dịch thực hiện bởi ${targetVal}`;
 
                 logs = historyData.filter(h => h.performer === targetVal);
                 const totalQtyMoved = logs.reduce((acc, curr) => acc + curr.qty, 0);
@@ -1705,83 +1838,85 @@
             summaryCard.classList.remove('hidden');
 
             if (logs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="px-5 py-8 text-center text-slate-400 italic">Chưa có giao dịch nào được ghi nhận cho đối tượng này.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="px-5 py-8 text-center text-slate-400 italic">Chưa ghi nhận giao dịch nào.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = logs.map(h => `
-                <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="px-5 py-3.5 text-xs text-slate-500">${new Date(h.timestamp).toLocaleString('vi-VN')}</td>
+                <tr class="hover:bg-slate-100/50 transition-colors text-xs">
+                    <td class="px-5 py-3.5 text-slate-500">${new Date(h.timestamp).toLocaleString('vi-VN')}</td>
                     <td class="px-5 py-3.5">
                         ${h.type === 'IMPORT' 
-                            ? `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800"><i class="fa-solid fa-arrow-down mr-1"></i> Nhập kho</span>`
-                            : `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-sky-100 text-sky-800"><i class="fa-solid fa-arrow-up mr-1"></i> Xuất kho</span>`
+                            ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-ios-green/10 text-ios-green"><i class="fa-solid fa-arrow-down mr-1"></i> Nhập</span>`
+                            : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-ios-blue/10 text-ios-blue"><i class="fa-solid fa-arrow-up mr-1"></i> Xuất</span>`
                         }
                     </td>
                     <td class="px-5 py-3.5">
-                        <div class="font-bold text-slate-800 text-xs">${h.itemName}</div>
-                        <div class="font-mono text-[11px] text-slate-400">${h.itemCode}</div>
+                        <div class="font-bold text-slate-900">${h.itemName}</div>
+                        <div class="font-mono text-[10px] text-slate-400">${h.itemCode}</div>
                     </td>
-                    <td class="px-5 py-3.5 text-right font-bold ${h.type === 'IMPORT' ? 'text-emerald-600' : 'text-sky-600'}">
+                    <td class="px-5 py-3.5 text-right font-bold ${h.type === 'IMPORT' ? 'text-ios-green' : 'text-ios-blue'}">
                         ${h.type === 'IMPORT' ? '+' : '-'}${h.qty}
                     </td>
-                    <td class="px-5 py-3.5 text-slate-600 text-xs">${h.partner || '-'}</td>
-                    <td class="px-5 py-3.5 font-medium text-slate-700 text-xs">${h.performer}</td>
-                    <td class="px-5 py-3.5 text-slate-500 text-xs italic">${h.note || '-'}</td>
+                    <td class="px-5 py-3.5 text-slate-600">${h.partner || '-'}</td>
+                    <td class="px-5 py-3.5 text-slate-800 font-semibold">${h.performer || '-'}</td>
+                    <td class="px-5 py-3.5 text-slate-500 italic">${h.note || '-'}</td>
                 </tr>
             `).join('');
         }
 
+        // Generic CSV Exporter
         function exportToCSV(type) {
-            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+            let records = [];
+            let filename = `Bao_Cao_${type.toUpperCase()}_${new Date().toISOString().slice(0,10)}.csv`;
+
             if (type === 'inventory') {
-                csvContent += "Ma VT,Ten Vat Tu,Danh Muc,DVT,So Luong Ton,Muc Toi Thieu,Don Gia (VND)\n";
-                inventoryData.forEach(i => {
-                    csvContent += `"${i.code}","${i.name}","${i.category}","${i.unit}",${i.quantity},${i.minStock},${i.price}\n`;
-                });
+                records = inventoryData.map(i => ({
+                    "Mã VT": i.code,
+                    "Tên vật tư": i.name,
+                    "Danh mục": i.category,
+                    "Đơn vị tính": i.unit,
+                    "Số lượng tồn": i.quantity,
+                    "Ngưỡng tối thiểu": i.minStock,
+                    "Đơn giá": i.price
+                }));
             } else if (type === 'history') {
-                csvContent += "Thoi Gian,Loai GD,Ma VT,Ten Vat Tu,So Luong,Doi Tac / Nguoi Nhan,Nguoi Thuc Hien,Ghi Chu\n";
-                historyData.forEach(h => {
-                    csvContent += `"${new Date(h.timestamp).toLocaleString('vi-VN')}","${h.type}","${h.itemCode}","${h.itemName}",${h.qty},"${h.partner}","${h.performer}","${h.note}"\n`;
-                });
+                records = historyData.map(h => ({
+                    "Thời gian": new Date(h.timestamp).toLocaleString('vi-VN'),
+                    "Loại GD": h.type,
+                    "Mã VT": h.itemCode,
+                    "Tên VT": h.itemName,
+                    "Số lượng": h.qty,
+                    "Đối tác": h.partner,
+                    "Người thực hiện": h.performer,
+                    "Ghi chú": h.note
+                }));
             } else if (type === 'trace') {
-                csvContent += "Thoi Gian,Loai GD,Ma VT,Ten Vat Tu,So Luong,Doi Tac / Nguoi Nhan,Nguoi Thuc Hien,Ghi Chu\n";
-                currentTraceResults.forEach(h => {
-                    csvContent += `"${new Date(h.timestamp).toLocaleString('vi-VN')}","${h.type}","${h.itemCode}","${h.itemName}",${h.qty},"${h.partner}","${h.performer}","${h.note}"\n`;
-                });
+                records = currentTraceResults.map(h => ({
+                    "Thời gian": new Date(h.timestamp).toLocaleString('vi-VN'),
+                    "Loại GD": h.type,
+                    "Mã VT": h.itemCode,
+                    "Tên VT": h.itemName,
+                    "Số lượng": h.qty,
+                    "Đối tác": h.partner,
+                    "Người thực hiện": h.performer,
+                    "Ghi chú": h.note
+                }));
             }
 
-            const encodedUri = encodeURI(csvContent);
+            if (!records.length) {
+                showToast('Không có dữ liệu để xuất CSV!', 'error');
+                return;
+            }
+
+            const ws = XLSX.utils.json_to_sheet(records);
+            const csv = XLSX.utils.sheet_to_csv(ws);
+            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `${type}_report_${new Date().toISOString().slice(0, 10)}.csv`);
-            document.body.appendChild(link);
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
             link.click();
-            document.body.removeChild(link);
-        }
-
-        // 12. TOAST NOTIFICATION
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-
-            const isError = type === 'error';
-            const bgClass = isError ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white';
-            const icon = isError ? 'fa-triangle-exclamation' : 'fa-circle-check';
-
-            toast.className = `p-4 rounded-xl shadow-2xl flex items-center space-x-3 transition-all transform translate-y-2 opacity-0 text-sm font-medium ${bgClass}`;
-            toast.innerHTML = `<i class="fa-solid ${icon} text-lg"></i> <span>${message}</span>`;
-
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            }, 10);
-
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => toast.remove(), 300);
-            }, 4000);
+            showToast('Đã xuất báo cáo CSV!');
         }
     </script>
 </body>
