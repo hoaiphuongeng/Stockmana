@@ -718,7 +718,18 @@
                     </div>
                     <div class="space-y-1.5">
                         <label class="block text-xs font-semibold text-slate-600">Đơn Vị Tính <span class="text-ios-red">*</span></label>
-                        <input type="text" id="item-unit" required placeholder="Cái, Bộ, Mét..." class="w-full px-3.5 py-2.5 bg-slate-100/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none">
+                        <select id="item-unit" required class="w-full px-3.5 py-2.5 bg-slate-100/80 border-0 rounded-2xl text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-ios-blue outline-none">
+                            <option value="Cái">Cái</option>
+                            <option value="Bộ">Bộ</option>
+                            <option value="Mét">Mét</option>
+                            <option value="Cuộn">Cuộn</option>
+                            <option value="Bình">Bình</option>
+                            <option value="Hộp">Hộp</option>
+                            <option value="Kg">Kg</option>
+                            <option value="Thanh">Thanh</option>
+                            <option value="Lít">Lít</option>
+                            <option value="Tấm">Tấm</option>
+                        </select>
                     </div>
                 </div>
 
@@ -1163,7 +1174,7 @@
             const category = document.getElementById('item-category').value;
             const code = document.getElementById('item-code').value;
             const name = document.getElementById('item-name').value.trim();
-            const unit = document.getElementById('item-unit').value.trim();
+            const unit = document.getElementById('item-unit').value;
             const minStock = parseInt(document.getElementById('item-min-stock').value, 10) || 0;
             const quantity = parseInt(document.getElementById('item-quantity').value, 10) || 0;
             const price = parseInt(document.getElementById('item-price').value, 10) || 0;
