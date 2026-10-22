@@ -1,0 +1,2 @@
+# stockmana
+Stock Management
