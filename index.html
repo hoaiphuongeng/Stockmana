@@ -963,20 +963,6 @@
             'OTHER': 'OTH'
         };
 
-        const defaultInventory = [
-            { id: '1', code: 'ME-0001', name: 'Aptomat 2P 32A Schneider', category: 'ME', unit: 'Cái', quantity: 15, minStock: 5, price: 145000 },
-            { id: '2', code: 'ME-0002', name: 'Rơ le trung gian Omron 24VDC', category: 'ME', unit: 'Cái', quantity: 4, minStock: 10, price: 65000 },
-            { id: '3', code: 'AC-0001', name: 'Gas lạnh R410A DuPont (Bình 11.3kg)', category: 'AC', unit: 'Bình', quantity: 3, minStock: 5, price: 1250000 },
-            { id: '4', code: 'BM-0001', name: 'Sơn nước nội thất Dulux màu trắng 5L', category: 'BM', unit: 'Thùng', quantity: 8, minStock: 4, price: 450000 },
-            { id: '5', code: 'ROOM-0001', name: 'Khóa từ cửa phòng Khách sạn Hune', category: 'ROOM', unit: 'Bộ', quantity: 2, minStock: 3, price: 1850000 },
-            { id: '6', code: 'OTHER-0001', name: 'Đồng hồ đo vạn năng Sanwa CD800a', category: 'OTHER', unit: 'Cái', quantity: 3, minStock: 2, price: 680000 }
-        ];
-
-        const defaultHistory = [
-            { id: 'h1', timestamp: new Date(Date.now() - 86400000 * 2).toISOString(), type: 'IMPORT', itemCode: 'ME-0001', itemName: 'Aptomat 2P 32A Schneider', qty: 10, partner: 'Thiết bị Điện HN', performer: 'Nguyễn Văn A', note: 'Nhập kho định kỳ' },
-            { id: 'h2', timestamp: new Date(Date.now() - 86400000).toISOString(), type: 'EXPORT', itemCode: 'AC-0001', itemName: 'Gas lạnh R410A DuPont (Bình 11.3kg)', qty: 1, partner: 'KTV Trần B', performer: 'Lê Văn C', note: 'Sạc gas điều hòa phòng 302' }
-        ];
-
         // --- CẤU HÌNH VÀ KHỞI TẠO FIREBASE ---
         const firebaseConfig = {
             apiKey: "AIzaSyAh30Bt-TS6PeSOAKY_EkgW1xPeP4puT8A",
@@ -1918,29 +1904,37 @@
 
                     if (errors.length) throw new Error(errors.slice(0, 8).join('; '));
 
+                    // Sử dụng Firebase Batch để đồng bộ toàn bộ file Excel lên Firestore
+                    const batch = db.batch();
                     const importedAt = new Date().toISOString();
-                    parsed.forEach((row, index) => {
+
+                    parsed.forEach((row) => {
                         let targetItem = row.item;
-                        if (!targetItem) {
+                        if (targetItem) {
+                            const newQty = targetItem.quantity + row.qty;
+                            const itemRef = db.collection("inventory").doc(targetItem.id);
+                            const updateData = { quantity: newQty };
+                            if (row.price > 0) updateData.price = row.price;
+                            batch.update(itemRef, updateData);
+                        } else {
                             const newCode = generateAutoCode(row.category);
-                            targetItem = {
-                                id: 'item_' + Date.now() + '_' + index,
+                            const newItemRef = db.collection("inventory").doc();
+                            const newItemData = {
                                 code: newCode,
                                 name: row.name,
                                 category: row.category,
                                 unit: 'Cái',
-                                quantity: 0,
+                                quantity: row.qty,
                                 minStock: 5,
                                 price: row.price > 0 ? row.price : 0
                             };
+                            batch.set(newItemRef, newItemData);
+                            targetItem = { id: newItemRef.id, ...newItemData };
                             inventoryData.push(targetItem);
                         }
 
-                        targetItem.quantity += row.qty;
-                        if (row.price > 0) targetItem.price = row.price;
-
-                        historyData.unshift({
-                            id: `h${Date.now()}-${index}`,
+                        const historyRef = db.collection("history").doc();
+                        const historyRecord = {
                             timestamp: toImportTimestamp(row.dateRaw) || importedAt,
                             type: 'IMPORT',
                             itemCode: targetItem.code,
@@ -1949,14 +1943,16 @@
                             partner: row.supplier || 'Nhà cung cấp',
                             performer: row.performer,
                             note: row.note || 'Nhập kho theo lô từ file Excel'
-                        });
+                        };
+                        batch.set(historyRef, historyRecord);
                     });
 
-                    saveState();
-                    updateDashboardStats();
-                    renderInventoryTable();
-                    renderRecentActivities();
-                    showToast(`Nạp Excel thành công: Đã xử lý ${parsed.length} dòng giao dịch.`);
+                    batch.commit().then(() => {
+                        showToast(`Nạp Excel thành công: Đã đồng bộ ${parsed.length} giao dịch lên hệ thống.`);
+                    }).catch(error => {
+                        showToast('Lỗi đồng bộ Firebase: ' + error.message, 'error');
+                    });
+
                 } catch (error) {
                     showToast(`Không thể nạp file Excel: ${error.message}`, 'error');
                 } finally {
@@ -2299,28 +2295,6 @@
         function hideToast() {
             document.getElementById('toast').classList.add('hidden');
         }
-
-        window.addEventListener('storage', function(event) {
-            if (['tech_inv_data', 'tech_inv_history', 'tech_inv_stocktakes'].includes(event.key)) {
-                inventoryData = JSON.parse(localStorage.getItem('tech_inv_data')) || defaultInventory;
-                historyData = JSON.parse(localStorage.getItem('tech_inv_history')) || defaultHistory;
-                stocktakeData = JSON.parse(localStorage.getItem('tech_inv_stocktakes')) || [];
-                
-                updateDashboardStats();
-                if (currentTab === 'dashboard') {
-                    renderDashboardCardDetails();
-                    renderRecentActivities();
-                } else if (currentTab === 'inventory') {
-                    renderInventoryTable();
-                } else if (currentTab === 'history') {
-                    renderHistoryTable();
-                } else if (currentTab === 'trace') {
-                    executeTrace();
-                }
-                
-                showToast('🔄 Dữ liệu đã được đồng bộ tự động từ tab khác!');
-            }
-        });
     </script>
 </body>
 </html>
