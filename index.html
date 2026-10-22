@@ -1790,7 +1790,9 @@
 
             const batch = db.batch();
             const itemRef = db.collection("inventory").doc(itemId);
-            batch.update(itemRef, updateData);
+            
+            // Dùng set với { merge: true } để tự động tạo document nếu chưa tồn tại trên Firestore
+            batch.set(itemRef, updateData, { merge: true });
 
             const historyRef = db.collection("history").doc();
             batch.set(historyRef, historyRecord);
@@ -1996,7 +1998,9 @@
 
             const batch = db.batch();
             const itemRef = db.collection("inventory").doc(itemId);
-            batch.update(itemRef, { quantity: newQuantity });
+            
+            // Dùng set với { merge: true } để đảm bảo không bị lỗi thiếu document trên Firestore
+            batch.set(itemRef, { quantity: newQuantity }, { merge: true });
 
             const historyRef = db.collection("history").doc();
             batch.set(historyRef, historyRecord);
