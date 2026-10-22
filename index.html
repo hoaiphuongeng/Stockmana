@@ -22,6 +22,8 @@
                             red: '#ff3b30',
                             purple: '#af52de',
                             teal: '#30b0c7',
+                            pink: '#ff2d55',
+                            indigo: '#5856d6',
                             gray: '#8e8e93',
                             lightGray: '#e5e5ea',
                             dark: '#1c1c1e'
@@ -37,6 +39,9 @@
                         'ios-sm': '0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02)',
                         'ios-md': '0 8px 24px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04)',
                         'ios-lg': '0 16px 32px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05)',
+                        'dark-mirror': '0 8px 32px 0 rgba(0, 0, 0, 0.4), inset 0 1px 1px 0 rgba(255, 255, 255, 0.12)',
+                        'block-3d': '0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04)',
+                        'dark-block-3d': '0 10px 25px -5px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.08)'
                     }
                 }
             }
@@ -46,7 +51,7 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Inter / SF Pro Styling -->
+    <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -67,8 +72,10 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
+        /* Dark mode mirror gradient background instead of pitch black */
         .dark body {
-            background-color: #000000;
+            background: linear-gradient(135deg, #1c1c1e 0%, #111113 50%, #0a0a0c 100%);
+            background-attachment: fixed;
             color: #f2f2f7;
         }
 
@@ -78,7 +85,7 @@
         .theme-border-primary { border-color: var(--color-primary-border) !important; }
         .theme-badge-bg { background-color: var(--color-primary-bg) !important; }
 
-        /* Glassmorphism iOS Style */
+        /* Glassmorphism iOS Style & Dark Mirror Effect */
         .glass-header {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(20px);
@@ -86,8 +93,11 @@
             border-bottom: 1px solid rgba(0, 0, 0, 0.08);
         }
         .dark .glass-header {
-            background: rgba(28, 28, 30, 0.85);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, rgba(35, 35, 40, 0.75), rgba(20, 20, 25, 0.85));
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
         }
 
         .glass-card {
@@ -95,16 +105,41 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
         }
         .dark .glass-card {
-            background: rgba(28, 28, 30, 0.75);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: linear-gradient(135deg, rgba(40, 40, 48, 0.65), rgba(24, 24, 30, 0.75));
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 12px 35px 0 rgba(0, 0, 0, 0.5), inset 0 1px 1px 0 rgba(255, 255, 255, 0.12);
+        }
+
+        /* 3D Highlight Blocks */
+        .data-block {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            transition: all 0.2s ease;
+        }
+        .dark .data-block {
+            background: linear-gradient(135deg, rgba(45, 45, 55, 0.7), rgba(30, 30, 38, 0.8));
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+        }
+        .data-block:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        }
+        .dark .data-block:hover {
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.2);
         }
 
         /* Custom Input & Select for Dark Mode */
         .dark input, .dark select, .dark textarea {
-            background-color: rgba(44, 44, 46, 0.8) !important;
+            background-color: rgba(35, 35, 42, 0.85) !important;
             color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         .dark input::placeholder, .dark textarea::placeholder {
             color: #8e8e93 !important;
@@ -114,7 +149,7 @@
         .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 10px; }
-        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.25); }
 
         /* Smooth View Fade-Dim-Zoom Animations */
         .page-transition {
@@ -139,7 +174,6 @@
             width: 100%;
         }
 
-        /* iOS Switch & Touch Interactions */
         .ios-btn-active:active {
             transform: scale(0.97);
             opacity: 0.85;
@@ -158,7 +192,7 @@
                 <div>
                     <h1 class="font-bold text-base sm:text-lg tracking-tight text-slate-900 dark:text-white leading-tight flex items-center gap-2">
                         <span id="display-app-name">QUẢN LÝ KHO KĨ THUẬT</span>
-                        <span class="text-[10px] font-semibold theme-badge-bg theme-text-primary px-2 py-0.5 rounded-full border theme-border-primary">SHP Edition</span>
+                        <span class="text-[10px] font-semibold theme-badge-bg theme-text-primary px-2 py-0.5 rounded-full border theme-border-primary shadow-sm">SHP Edition</span>
                     </h1>
                     <p id="display-app-subtitle" class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Đồng bộ Cloud Firestore • iOS Interface</p>
                 </div>
@@ -171,13 +205,13 @@
                     <span>Đang kết nối...</span>
                 </div>
                 
-                <div class="hidden md:flex items-center space-x-4 bg-slate-200/50 dark:bg-slate-800/50 p-1 rounded-2xl border border-slate-300/40 dark:border-slate-700/40">
+                <div class="hidden md:flex items-center space-x-4 bg-slate-200/50 dark:bg-slate-800/50 p-1.5 rounded-2xl border border-slate-300/40 dark:border-slate-700/40 shadow-inner">
                     <div class="flex items-center space-x-1.5 px-3 py-1">
                         <i class="fa-solid fa-cube theme-text-primary"></i>
                         <span class="text-slate-500 dark:text-slate-400 font-medium">Danh mục:</span>
                         <span class="font-bold text-slate-800 dark:text-slate-200" id="header-total-items">0</span>
                     </div>
-                    <div class="flex items-center space-x-1.5 px-3 py-1 bg-white dark:bg-slate-700 rounded-xl shadow-ios-sm">
+                    <div class="flex items-center space-x-1.5 px-3 py-1 bg-white dark:bg-slate-700/80 rounded-xl shadow-sm border border-slate-200/40 dark:border-slate-600/40">
                         <i class="fa-solid fa-triangle-exclamation text-ios-orange"></i>
                         <span class="text-slate-500 dark:text-slate-300 font-medium">Cảnh báo:</span>
                         <span class="font-bold text-ios-orange" id="header-low-stock">0</span>
@@ -191,35 +225,49 @@
             </div>
         </div>
 
-        <!-- Segmented iOS Tab Bar Navigation -->
+        <!-- Color-Coded Segmented iOS Tab Bar Navigation -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-2">
-            <nav class="flex bg-slate-200/60 dark:bg-slate-800/60 p-1 rounded-2xl overflow-x-auto custom-scrollbar space-x-1 backdrop-blur-md border border-slate-300/30 dark:border-slate-700/30">
-                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-tab flex-1 min-w-[100px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active">
-                    <i class="fa-solid fa-chart-pie text-sm"></i>
+            <nav class="flex bg-slate-200/60 dark:bg-slate-800/60 p-1.5 rounded-2xl overflow-x-auto custom-scrollbar space-x-1.5 backdrop-blur-md border border-slate-300/30 dark:border-slate-700/30 shadow-inner">
+                <!-- Tổng quan: Blue -->
+                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-tab flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active border border-transparent hover:border-ios-blue/30" data-color="ios-blue">
+                    <span class="w-2.5 h-2.5 rounded-full bg-ios-blue shadow-sm"></span>
+                    <i class="fa-solid fa-chart-pie text-ios-blue text-xs"></i>
                     <span>Tổng quan</span>
                 </button>
-                <button onclick="switchTab('inventory')" id="tab-inventory" class="nav-tab flex-1 min-w-[100px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active">
-                    <i class="fa-solid fa-list-check text-sm"></i>
+                <!-- Vật tư: Green -->
+                <button onclick="switchTab('inventory')" id="tab-inventory" class="nav-tab flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active border border-transparent hover:border-ios-green/30" data-color="ios-green">
+                    <span class="w-2.5 h-2.5 rounded-full bg-ios-green shadow-sm"></span>
+                    <i class="fa-solid fa-list-check text-ios-green text-xs"></i>
                     <span>Vật tư</span>
                 </button>
-                <button onclick="switchTab('import')" id="tab-import" class="nav-tab flex-1 min-w-[100px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active">
-                    <i class="fa-solid fa-file-import text-sm"></i>
+                <!-- Nhập kho: Teal -->
+                <button onclick="switchTab('import')" id="tab-import" class="nav-tab flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active border border-transparent hover:border-ios-teal/30" data-color="ios-teal">
+                    <span class="w-2.5 h-2.5 rounded-full bg-ios-teal shadow-sm"></span>
+                    <i class="fa-solid fa-file-import text-ios-teal text-xs"></i>
                     <span>Nhập kho</span>
                 </button>
-                <button onclick="switchTab('export')" id="tab-export" class="nav-tab flex-1 min-w-[100px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active">
-                    <i class="fa-solid fa-file-export text-sm"></i>
+                <!-- Xuất kho: Orange -->
+                <button onclick="switchTab('export')" id="tab-export" class="nav-tab flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active border border-transparent hover:border-ios-orange/30" data-color="ios-orange">
+                    <span class="w-2.5 h-2.5 rounded-full bg-ios-orange shadow-sm"></span>
+                    <i class="fa-solid fa-file-export text-ios-orange text-xs"></i>
                     <span>Xuất kho</span>
                 </button>
-                <button onclick="switchTab('stocktake')" id="tab-stocktake" class="nav-tab flex-1 min-w-[100px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active">
-                    <i class="fa-solid fa-clipboard-check text-sm"></i>
+                <!-- Kiểm kê: Purple -->
+                <button onclick="switchTab('stocktake')" id="tab-stocktake" class="nav-tab flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active border border-transparent hover:border-ios-purple/30" data-color="ios-purple">
+                    <span class="w-2.5 h-2.5 rounded-full bg-ios-purple shadow-sm"></span>
+                    <i class="fa-solid fa-clipboard-check text-ios-purple text-xs"></i>
                     <span>Kiểm kê</span>
                 </button>
-                <button onclick="switchTab('history')" id="tab-history" class="nav-tab flex-1 min-w-[100px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active">
-                    <i class="fa-solid fa-clock-rotate-left text-sm"></i>
+                <!-- Lịch sử: Pink -->
+                <button onclick="switchTab('history')" id="tab-history" class="nav-tab flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active border border-transparent hover:border-ios-pink/30" data-color="ios-pink">
+                    <span class="w-2.5 h-2.5 rounded-full bg-ios-pink shadow-sm"></span>
+                    <i class="fa-solid fa-clock-rotate-left text-ios-pink text-xs"></i>
                     <span>Lịch sử</span>
                 </button>
-                <button onclick="switchTab('trace')" id="tab-trace" class="nav-tab flex-1 min-w-[100px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active">
-                    <i class="fa-solid fa-magnifying-glass-chart text-sm"></i>
+                <!-- Truy xuất: Indigo -->
+                <button onclick="switchTab('trace')" id="tab-trace" class="nav-tab flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 transition-all duration-200 flex items-center justify-center space-x-1.5 ios-btn-active border border-transparent hover:border-ios-indigo/30" data-color="ios-indigo">
+                    <span class="w-2.5 h-2.5 rounded-full bg-ios-indigo shadow-sm"></span>
+                    <i class="fa-solid fa-magnifying-glass-chart text-ios-indigo text-xs"></i>
                     <span>Truy xuất</span>
                 </button>
             </nav>
@@ -234,48 +282,48 @@
 
         <!-- 1. DASHBOARD VIEW -->
         <section id="view-dashboard" class="page-transition view-active space-y-6">
-            <!-- iOS Style Cards Grid -->
+            <!-- iOS Style Cards Grid with 3D Highlight Blocks -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div id="card-total" onclick="selectDashboardCard('all')" class="glass-card p-5 rounded-3xl shadow-ios-sm cursor-pointer hover:shadow-ios-md border border-white/80 dark:border-slate-800 transition-all ios-btn-active flex items-center justify-between">
+                <div id="card-total" onclick="selectDashboardCard('all')" class="data-block p-5 rounded-3xl cursor-pointer hover:shadow-ios-md transition-all ios-btn-active flex items-center justify-between">
                     <div>
                         <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Tổng loại vật tư</p>
                         <h3 class="text-2xl font-bold text-slate-900 dark:text-white" id="stat-total-types">0</h3>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1"><span class="theme-text-primary font-bold" id="stat-total-qty">0</span> món tồn kho</p>
                     </div>
-                    <div class="w-12 h-12 theme-badge-bg rounded-2xl flex items-center justify-center theme-text-primary">
+                    <div class="w-12 h-12 theme-badge-bg rounded-2xl flex items-center justify-center theme-text-primary shadow-sm">
                         <i class="fa-solid fa-boxes-stacked text-xl"></i>
                     </div>
                 </div>
 
-                <div id="card-valuation" class="glass-card p-5 rounded-3xl shadow-ios-sm border border-white/80 dark:border-slate-800 flex items-center justify-between">
+                <div id="card-valuation" class="data-block p-5 rounded-3xl flex items-center justify-between">
                     <div>
                         <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Giá trị kho ước tính</p>
                         <h3 class="text-2xl font-bold text-slate-900 dark:text-white" id="stat-total-value">0 ₫</h3>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Đơn giá nhập trung bình</p>
                     </div>
-                    <div class="w-12 h-12 bg-ios-purple/10 rounded-2xl flex items-center justify-center text-ios-purple">
+                    <div class="w-12 h-12 bg-ios-purple/10 rounded-2xl flex items-center justify-center text-ios-purple shadow-sm">
                         <i class="fa-solid fa-vault text-xl"></i>
                     </div>
                 </div>
 
-                <div id="card-low" onclick="selectDashboardCard('low')" class="glass-card p-5 rounded-3xl shadow-ios-sm cursor-pointer hover:shadow-ios-md border border-white/80 dark:border-slate-800 transition-all ios-btn-active flex items-center justify-between">
+                <div id="card-low" onclick="selectDashboardCard('low')" class="data-block p-5 rounded-3xl cursor-pointer hover:shadow-ios-md transition-all ios-btn-active flex items-center justify-between">
                     <div>
                         <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Cảnh báo sắp hết</p>
                         <h3 class="text-2xl font-bold text-ios-orange" id="stat-low-stock">0</h3>
                         <p class="text-xs text-ios-orange font-medium mt-1">Dưới ngưỡng tối thiểu</p>
                     </div>
-                    <div class="w-12 h-12 bg-ios-orange/10 rounded-2xl flex items-center justify-center text-ios-orange">
+                    <div class="w-12 h-12 bg-ios-orange/10 rounded-2xl flex items-center justify-center text-ios-orange shadow-sm">
                         <i class="fa-solid fa-triangle-exclamation text-xl"></i>
                     </div>
                 </div>
 
-                <div id="card-out" onclick="selectDashboardCard('out')" class="glass-card p-5 rounded-3xl shadow-ios-sm cursor-pointer hover:shadow-ios-md border border-white/80 dark:border-slate-800 transition-all ios-btn-active flex items-center justify-between">
+                <div id="card-out" onclick="selectDashboardCard('out')" class="data-block p-5 rounded-3xl cursor-pointer hover:shadow-ios-md transition-all ios-btn-active flex items-center justify-between">
                     <div>
                         <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Đã hết hàng</p>
                         <h3 class="text-2xl font-bold text-ios-red" id="stat-out-of-stock">0</h3>
                         <p class="text-xs text-ios-red font-medium mt-1">Cần bổ sung ngay</p>
                     </div>
-                    <div class="w-12 h-12 bg-ios-red/10 rounded-2xl flex items-center justify-center text-ios-red">
+                    <div class="w-12 h-12 bg-ios-red/10 rounded-2xl flex items-center justify-center text-ios-red shadow-sm">
                         <i class="fa-solid fa-circle-xmark text-xl"></i>
                     </div>
                 </div>
@@ -283,7 +331,7 @@
 
             <!-- Dashboard Table & Stream -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 glass-card rounded-3xl shadow-ios-sm border border-white/80 dark:border-slate-800 overflow-hidden flex flex-col">
+                <div class="lg:col-span-2 glass-card rounded-3xl shadow-ios-sm overflow-hidden flex flex-col">
                     <div class="p-4 sm:p-5 border-b border-slate-200/50 dark:border-slate-800 flex items-center justify-between bg-white/40 dark:bg-slate-800/40">
                         <div class="flex items-center space-x-2">
                             <i id="dashboard-card-icon" class="fa-solid fa-list-check theme-text-primary"></i>
@@ -312,7 +360,7 @@
                 </div>
 
                 <!-- Recent Activities iOS List -->
-                <div class="glass-card rounded-3xl shadow-ios-sm border border-white/80 dark:border-slate-800 p-5 flex flex-col">
+                <div class="glass-card rounded-3xl shadow-ios-sm p-5 flex flex-col">
                     <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-200/50 dark:border-slate-800">
                         <h3 class="font-bold text-slate-900 dark:text-white text-sm sm:text-base flex items-center space-x-2">
                             <i class="fa-solid fa-clock-rotate-left theme-text-primary"></i>
@@ -328,13 +376,13 @@
 
         <!-- 2. INVENTORY MANAGEMENT VIEW -->
         <section id="view-inventory" class="page-transition view-hidden-left space-y-5">
-            <div class="glass-card p-4 rounded-3xl shadow-ios-sm border border-white/80 dark:border-slate-800 flex flex-col md:flex-row gap-3 items-center justify-between">
+            <div class="glass-card p-4 rounded-3xl shadow-ios-sm flex flex-col md:flex-row gap-3 items-center justify-between">
                 <div class="flex flex-1 flex-col sm:flex-row gap-2.5 w-full md:w-auto">
                     <div class="relative flex-1">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                        <input type="text" id="inventory-search" oninput="renderInventoryTable()" placeholder="Tìm kiếm tên, mã vật tư..." class="w-full pl-9 pr-4 py-2 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none transition-all">
+                        <input type="text" id="inventory-search" oninput="renderInventoryTable()" placeholder="Tìm kiếm tên, mã vật tư..." class="w-full pl-9 pr-4 py-2 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none transition-all shadow-inner">
                     </div>
-                    <select id="inventory-filter-category" onchange="renderInventoryTable()" class="bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-ios-blue outline-none transition-all">
+                    <select id="inventory-filter-category" onchange="renderInventoryTable()" class="bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-ios-blue outline-none transition-all shadow-inner">
                         <option value="">Tất cả danh mục</option>
                         <option value="ME">Kỹ thuật ME</option>
                         <option value="BM">Tòa nhà BM</option>
@@ -342,7 +390,7 @@
                         <option value="ROOM">Phòng khách ROOM</option>
                         <option value="OTHER">Khác OTHER</option>
                     </select>
-                    <select id="inventory-filter-status" onchange="renderInventoryTable()" class="bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-ios-blue outline-none transition-all">
+                    <select id="inventory-filter-status" onchange="renderInventoryTable()" class="bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-ios-blue outline-none transition-all shadow-inner">
                         <option value="">Tất cả trạng thái</option>
                         <option value="SAFE">An toàn</option>
                         <option value="LOW">Sắp hết</option>
@@ -351,7 +399,7 @@
                 </div>
 
                 <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
-                    <button onclick="exportToCSV('inventory')" class="bg-slate-200/70 dark:bg-slate-800 dark:text-slate-200 hover:bg-slate-300/70 text-slate-700 font-semibold px-3.5 py-2 rounded-2xl text-xs transition-colors flex items-center space-x-1.5 ios-btn-active">
+                    <button onclick="exportToCSV('inventory')" class="bg-slate-200/70 dark:bg-slate-800 dark:text-slate-200 hover:bg-slate-300/70 text-slate-700 font-semibold px-3.5 py-2 rounded-2xl text-xs transition-colors flex items-center space-x-1.5 ios-btn-active shadow-sm">
                         <i class="fa-solid fa-file-csv text-slate-500"></i>
                         <span>Xuất CSV</span>
                     </button>
@@ -362,7 +410,7 @@
                 </div>
             </div>
 
-            <div class="glass-card rounded-3xl shadow-ios-sm border border-white/80 dark:border-slate-800 overflow-hidden">
+            <div class="glass-card rounded-3xl shadow-ios-sm overflow-hidden">
                 <div class="overflow-x-auto max-h-[580px] custom-scrollbar">
                     <table class="w-full text-left text-sm">
                         <thead class="bg-slate-100/80 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 text-[11px] uppercase font-bold sticky top-0 z-10 border-b border-slate-200/50 dark:border-slate-700/50 backdrop-blur-md">
@@ -388,7 +436,7 @@
         <!-- 3. IMPORT WAREHOUSE VIEW -->
         <section id="view-import" class="page-transition view-hidden-left">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 glass-card p-6 sm:p-8 rounded-3xl shadow-ios-sm border border-white/80 dark:border-slate-800 space-y-6">
+                <div class="lg:col-span-2 glass-card p-6 sm:p-8 rounded-3xl shadow-ios-sm space-y-6">
                     <div class="border-b border-slate-200/50 dark:border-slate-800 pb-4">
                         <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
                             <i class="fa-solid fa-file-import text-ios-green"></i>
@@ -402,15 +450,15 @@
                             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Chọn Vật tư <span class="text-ios-red">*</span></label>
                             <div class="relative">
                                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                <input type="text" id="import-search" oninput="searchSmart('import')" placeholder="Nhập tên hoặc mã vật tư..." autocomplete="off" required class="w-full pl-9 pr-8 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-green outline-none transition-all">
+                                <input type="text" id="import-search" oninput="searchSmart('import')" placeholder="Nhập tên hoặc mã vật tư..." autocomplete="off" required class="w-full pl-9 pr-8 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-green outline-none transition-all shadow-inner">
                             </div>
                             <input type="hidden" id="import-selected-item-id" required>
                             <div id="import-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border border-slate-200 dark:border-slate-700 rounded-2xl shadow-ios-lg z-30 max-h-56 overflow-y-auto custom-scrollbar divide-y divide-slate-100 dark:divide-slate-700"></div>
                         </div>
 
-                        <div id="import-selected-badge" class="hidden p-3.5 bg-ios-green/10 border border-ios-green/20 rounded-2xl flex items-center justify-between text-xs">
+                        <div id="import-selected-badge" class="hidden p-3.5 bg-ios-green/10 border border-ios-green/20 rounded-2xl flex items-center justify-between text-xs shadow-sm">
                             <div class="flex items-center space-x-3">
-                                <span id="import-badge-code" class="font-mono bg-ios-green text-white font-bold px-2 py-0.5 rounded-lg"></span>
+                                <span id="import-badge-code" class="font-mono bg-ios-green text-white font-bold px-2 py-0.5 rounded-lg shadow-sm"></span>
                                 <span id="import-badge-name" class="font-semibold text-slate-800 dark:text-slate-200"></span>
                             </div>
                             <div class="text-slate-600 dark:text-slate-400">
@@ -421,29 +469,29 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
                                 <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Số lượng nhập <span class="text-ios-red">*</span></label>
-                                <input type="number" id="import-qty" min="1" required placeholder="Nhập số lượng" class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-green outline-none">
+                                <input type="number" id="import-qty" min="1" required placeholder="Nhập số lượng" class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-green outline-none shadow-inner">
                             </div>
                             <div class="space-y-1.5">
                                 <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Đơn giá nhập (VNĐ)</label>
-                                <input type="number" id="import-price" min="0" placeholder="Để trống nếu giữ giá cũ" class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-green outline-none">
+                                <input type="number" id="import-price" min="0" placeholder="Để trống nếu giữ giá cũ" class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-green outline-none shadow-inner">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
                                 <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Nhà cung cấp / Nguồn nhập</label>
-                                <input type="text" id="import-supplier" placeholder="Công ty / Cửa hàng..." class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-green outline-none">
+                                <input type="text" id="import-supplier" placeholder="Công ty / Cửa hàng..." class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-green outline-none shadow-inner">
                             </div>
                             <div class="space-y-1.5 relative">
                                 <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Người thực hiện <span class="text-ios-red">*</span></label>
-                                <input type="text" id="import-performer" required placeholder="Gõ tên cán bộ..." autocomplete="off" onfocus="searchStaff('import-performer')" oninput="searchStaff('import-performer')" class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-green outline-none">
+                                <input type="text" id="import-performer" required placeholder="Gõ tên cán bộ..." autocomplete="off" onfocus="searchStaff('import-performer')" oninput="searchStaff('import-performer')" class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-green outline-none shadow-inner">
                                 <div id="import-performer-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border border-slate-200 dark:border-slate-700 rounded-2xl shadow-ios-lg z-30 max-h-48 overflow-y-auto custom-scrollbar divide-y divide-slate-100 dark:divide-slate-700"></div>
                             </div>
                         </div>
 
                         <div class="space-y-1.5">
                             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Ghi chú</label>
-                            <textarea id="import-note" rows="2" placeholder="Ghi chú chi tiết..." class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-green outline-none"></textarea>
+                            <textarea id="import-note" rows="2" placeholder="Ghi chú chi tiết..." class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-green outline-none shadow-inner"></textarea>
                         </div>
 
                         <button type="submit" class="w-full bg-ios-green hover:bg-green-600 text-white font-semibold py-3 rounded-2xl text-xs transition-all shadow-md shadow-ios-green/20 flex items-center justify-center space-x-2 ios-btn-active">
@@ -454,7 +502,7 @@
                 </div>
 
                 <!-- Excel Batch Import iOS Card -->
-                <div class="glass-card p-6 sm:p-8 rounded-3xl shadow-ios-sm border border-white/80 dark:border-slate-800 flex flex-col justify-between space-y-6">
+                <div class="glass-card p-6 sm:p-8 rounded-3xl shadow-ios-sm flex flex-col justify-between space-y-6">
                     <div class="space-y-3">
                         <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2 pb-3 border-b border-slate-200/50 dark:border-slate-800">
                             <i class="fa-solid fa-file-excel text-ios-green"></i>
@@ -464,7 +512,7 @@
                     </div>
 
                     <div class="space-y-2.5">
-                        <button onclick="downloadImportTemplate()" class="w-full py-2.5 bg-slate-200/70 dark:bg-slate-800 hover:bg-slate-300/70 text-slate-800 dark:text-slate-200 font-semibold rounded-2xl transition-all flex items-center justify-center space-x-2 text-xs ios-btn-active">
+                        <button onclick="downloadImportTemplate()" class="w-full py-2.5 bg-slate-200/70 dark:bg-slate-800 hover:bg-slate-300/70 text-slate-800 dark:text-slate-200 font-semibold rounded-2xl transition-all flex items-center justify-center space-x-2 text-xs ios-btn-active shadow-sm">
                             <i class="fa-solid fa-file-arrow-down theme-text-primary"></i>
                             <span>Tải Mẫu Excel Nhập Kho</span>
                         </button>
@@ -481,7 +529,7 @@
 
         <!-- 4. EXPORT WAREHOUSE VIEW -->
         <section id="view-export" class="page-transition view-hidden-left">
-            <div class="max-w-2xl mx-auto glass-card p-6 sm:p-8 rounded-3xl shadow-ios-sm border border-white/80 dark:border-slate-800 space-y-6">
+            <div class="max-w-2xl mx-auto glass-card p-6 sm:p-8 rounded-3xl shadow-ios-sm space-y-6">
                 <div class="border-b border-slate-200/50 dark:border-slate-800 pb-4">
                     <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
                         <i class="fa-solid fa-file-export theme-text-primary"></i>
@@ -495,15 +543,15 @@
                         <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Chọn Vật tư Cần Xuất <span class="text-ios-red">*</span></label>
                         <div class="relative">
                             <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                            <input type="text" id="export-search" oninput="searchSmart('export')" placeholder="Nhập tên hoặc mã vật tư..." autocomplete="off" required class="w-full pl-9 pr-8 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none">
+                            <input type="text" id="export-search" oninput="searchSmart('export')" placeholder="Nhập tên hoặc mã vật tư..." autocomplete="off" required class="w-full pl-9 pr-8 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none shadow-inner">
                         </div>
                         <input type="hidden" id="export-selected-item-id" required>
                         <div id="export-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border border-slate-200 dark:border-slate-700 rounded-2xl shadow-ios-lg z-30 max-h-56 overflow-y-auto custom-scrollbar divide-y divide-slate-100 dark:divide-slate-700"></div>
                     </div>
 
-                    <div id="export-selected-badge" class="hidden p-3.5 theme-badge-bg border theme-border-primary rounded-2xl flex items-center justify-between text-xs">
+                    <div id="export-selected-badge" class="hidden p-3.5 theme-badge-bg border theme-border-primary rounded-2xl flex items-center justify-between text-xs shadow-sm">
                         <div class="flex items-center space-x-3">
-                            <span id="export-badge-code" class="font-mono theme-bg-primary text-white font-bold px-2 py-0.5 rounded-lg"></span>
+                            <span id="export-badge-code" class="font-mono theme-bg-primary text-white font-bold px-2 py-0.5 rounded-lg shadow-sm"></span>
                             <span id="export-badge-name" class="font-semibold text-slate-800 dark:text-slate-200"></span>
                         </div>
                         <div class="text-slate-600 dark:text-slate-400">
@@ -514,29 +562,29 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="space-y-1.5">
                             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Số lượng xuất <span class="text-ios-red">*</span></label>
-                            <input type="number" id="export-qty" min="1" required placeholder="Nhập số lượng" class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none">
+                            <input type="number" id="export-qty" min="1" required placeholder="Nhập số lượng" class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none shadow-inner">
                         </div>
                         <div class="space-y-1.5">
                             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Bộ phận / Người nhận <span class="text-ios-red">*</span></label>
-                            <input type="text" id="export-receiver" required placeholder="Tên người nhận hoặc phòng..." class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none">
+                            <input type="text" id="export-receiver" required placeholder="Tên người nhận hoặc phòng..." class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none shadow-inner">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="space-y-1.5">
                             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Mục đích sử dụng</label>
-                            <input type="text" id="export-purpose" placeholder="Ví dụ: Thay thế máy lạnh P.302..." class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none">
+                            <input type="text" id="export-purpose" placeholder="Ví dụ: Thay thế máy lạnh P.302..." class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none shadow-inner">
                         </div>
                         <div class="space-y-1.5 relative">
                             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Người thực hiện <span class="text-ios-red">*</span></label>
-                            <input type="text" id="export-performer" required placeholder="Gõ tên cán bộ..." autocomplete="off" onfocus="searchStaff('export-performer')" oninput="searchStaff('export-performer')" class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none">
+                            <input type="text" id="export-performer" required placeholder="Gõ tên cán bộ..." autocomplete="off" onfocus="searchStaff('export-performer')" oninput="searchStaff('export-performer')" class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none shadow-inner">
                             <div id="export-performer-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border border-slate-200 dark:border-slate-700 rounded-2xl shadow-ios-lg z-30 max-h-48 overflow-y-auto custom-scrollbar divide-y divide-slate-100 dark:divide-slate-700"></div>
                         </div>
                     </div>
 
                     <div class="space-y-1.5">
                         <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Ghi chú</label>
-                        <textarea id="export-note" rows="2" placeholder="Ghi chú thêm..." class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none"></textarea>
+                        <textarea id="export-note" rows="2" placeholder="Ghi chú thêm..." class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none shadow-inner"></textarea>
                     </div>
 
                     <button type="submit" class="w-full theme-bg-primary hover:opacity-90 text-white font-semibold py-3 rounded-2xl text-xs transition-all shadow-md flex items-center justify-center space-x-2 ios-btn-active">
@@ -549,7 +597,7 @@
 
         <!-- 5. STOCKTAKE VIEW WITH EXCEL IMPORT/EXPORT -->
         <section id="view-stocktake" class="page-transition view-hidden-left space-y-5">
-            <div class="glass-card p-5 rounded-3xl shadow-ios-sm border border-white/80 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
+            <div class="glass-card p-5 rounded-3xl shadow-ios-sm flex flex-wrap items-center justify-between gap-4">
                 <div>
                     <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
                         <i class="fa-solid fa-clipboard-check text-ios-purple"></i>
@@ -564,7 +612,7 @@
                     </button>
 
                     <!-- Stocktake Excel Action Buttons -->
-                    <button id="btn-export-stocktake-excel" onclick="exportStocktakeTemplateExcel()" class="hidden px-3.5 py-2 bg-slate-200/80 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-2xl text-xs font-semibold transition-all flex items-center space-x-1.5 ios-btn-active">
+                    <button id="btn-export-stocktake-excel" onclick="exportStocktakeTemplateExcel()" class="hidden px-3.5 py-2 bg-slate-200/80 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-2xl text-xs font-semibold transition-all flex items-center space-x-1.5 ios-btn-active shadow-sm">
                         <i class="fa-solid fa-file-excel text-ios-green"></i><span>Xuất Excel Kiểm Kê</span>
                     </button>
 
@@ -580,7 +628,7 @@
             </div>
 
             <!-- Active Stocktake Interactive List -->
-            <div id="stocktake-container" class="glass-card rounded-3xl shadow-ios-sm border border-white/80 dark:border-slate-800 overflow-hidden">
+            <div id="stocktake-container" class="glass-card rounded-3xl shadow-ios-sm overflow-hidden">
                 <div class="p-8 text-center text-slate-400">
                     <i class="fa-solid fa-clipboard-list text-4xl mb-3 opacity-30"></i>
                     <p class="text-sm font-medium">Chưa có phiếu kiểm kê nào đang mở.</p>
@@ -591,13 +639,13 @@
 
         <!-- 6. TRANSACTION HISTORY VIEW -->
         <section id="view-history" class="page-transition view-hidden-left space-y-5">
-            <div class="glass-card p-4 rounded-3xl shadow-ios-sm border border-white/80 dark:border-slate-800 flex flex-col md:flex-row gap-3 items-center justify-between">
+            <div class="glass-card p-4 rounded-3xl shadow-ios-sm flex flex-col md:flex-row gap-3 items-center justify-between">
                 <div class="flex flex-1 flex-col sm:flex-row gap-2.5 w-full md:w-auto">
                     <div class="relative flex-1">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                        <input type="text" id="history-search" oninput="renderHistoryTable()" placeholder="Tìm theo VT, người thực hiện..." class="w-full pl-9 pr-4 py-2 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none">
+                        <input type="text" id="history-search" oninput="renderHistoryTable()" placeholder="Tìm theo VT, người thực hiện..." class="w-full pl-9 pr-4 py-2 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none shadow-inner">
                     </div>
-                    <select id="history-type-filter" onchange="renderHistoryTable()" class="bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-ios-blue outline-none">
+                    <select id="history-type-filter" onchange="renderHistoryTable()" class="bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-ios-blue outline-none shadow-inner">
                         <option value="ALL">Tất cả loại giao dịch</option>
                         <option value="IMPORT">Nhập kho</option>
                         <option value="EXPORT">Xuất kho</option>
@@ -612,7 +660,7 @@
                 </div>
             </div>
 
-            <div class="glass-card rounded-3xl shadow-ios-sm border border-white/80 dark:border-slate-800 overflow-hidden">
+            <div class="glass-card rounded-3xl shadow-ios-sm overflow-hidden">
                 <div class="overflow-x-auto max-h-[550px] custom-scrollbar">
                     <table class="w-full text-left text-sm">
                         <thead class="bg-slate-100/80 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 text-[11px] uppercase font-bold sticky top-0 z-10 border-b border-slate-200/50 dark:border-slate-700/50 backdrop-blur-md">
@@ -637,7 +685,7 @@
 
         <!-- 7. TRACE / LOOKUP VIEW -->
         <section id="view-trace" class="page-transition view-hidden-left space-y-6">
-            <div class="glass-card p-5 rounded-3xl shadow-ios-sm border border-white/80 dark:border-slate-800 space-y-4">
+            <div class="glass-card p-5 rounded-3xl shadow-ios-sm space-y-4">
                 <div class="border-b border-slate-200/50 dark:border-slate-800 pb-3 flex items-center justify-between">
                     <div>
                         <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
@@ -651,7 +699,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Chế độ truy xuất</label>
-                        <select id="trace-mode" onchange="handleTraceModeChange()" class="w-full bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl px-3.5 py-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-ios-orange outline-none">
+                        <select id="trace-mode" onchange="handleTraceModeChange()" class="w-full bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl px-3.5 py-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-ios-orange outline-none shadow-inner">
                             <option value="item">📦 Theo Vật tư kỹ thuật</option>
                             <option value="performer">👤 Theo Người thực hiện</option>
                         </select>
@@ -659,21 +707,21 @@
 
                     <div class="md:col-span-2">
                         <label id="trace-target-label" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Chọn Đối tượng truy xuất</label>
-                        <select id="trace-target-select" onchange="executeTrace()" class="w-full bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl px-3.5 py-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-ios-orange outline-none">
+                        <select id="trace-target-select" onchange="executeTrace()" class="w-full bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl px-3.5 py-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-ios-orange outline-none shadow-inner">
                         </select>
                     </div>
                 </div>
             </div>
 
-            <div id="trace-summary-card" class="hidden bg-slate-900 text-white p-6 rounded-3xl shadow-ios-md space-y-4">
+            <div id="trace-summary-card" class="hidden bg-slate-900 text-white p-6 rounded-3xl shadow-ios-md space-y-4 border border-slate-700">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
                     <div>
-                        <span id="trace-summary-badge" class="bg-ios-orange/20 text-ios-orange border border-ios-orange/30 text-[10px] px-2.5 py-0.5 rounded-full font-mono font-bold uppercase">MỤC TRUY XUẤT</span>
+                        <span id="trace-summary-badge" class="bg-ios-orange/20 text-ios-orange border border-ios-orange/30 text-[10px] px-2.5 py-0.5 rounded-full font-mono font-bold uppercase shadow-sm">MỤC TRUY XUẤT</span>
                         <h3 id="trace-summary-title" class="text-lg font-bold text-white mt-1">---</h3>
                         <p id="trace-summary-subtitle" class="text-xs text-slate-400 mt-0.5">---</p>
                     </div>
                     <div>
-                        <button onclick="exportToCSV('trace')" class="bg-ios-orange hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-2xl text-xs transition-colors flex items-center space-x-1.5 ios-btn-active">
+                        <button onclick="exportToCSV('trace')" class="bg-ios-orange hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-2xl text-xs transition-colors flex items-center space-x-1.5 ios-btn-active shadow-md">
                             <i class="fa-solid fa-file-csv"></i>
                             <span>Xuất báo cáo</span>
                         </button>
@@ -681,26 +729,26 @@
                 </div>
 
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-                    <div class="bg-slate-800/80 p-3 rounded-2xl border border-slate-700/50">
+                    <div class="bg-slate-800/90 p-3.5 rounded-2xl border border-slate-700 shadow-inner">
                         <span class="text-slate-400 block mb-1">Tổng lượt giao dịch:</span>
                         <span id="trace-stat-total" class="text-lg font-bold text-white">0</span>
                     </div>
-                    <div class="bg-slate-800/80 p-3 rounded-2xl border border-slate-700/50">
+                    <div class="bg-slate-800/90 p-3.5 rounded-2xl border border-slate-700 shadow-inner">
                         <span class="text-ios-green block mb-1">Lượt Nhập kho:</span>
                         <span id="trace-stat-imports" class="text-lg font-bold text-ios-green">0</span>
                     </div>
-                    <div class="bg-slate-800/80 p-3 rounded-2xl border border-slate-700/50">
+                    <div class="bg-slate-800/90 p-3.5 rounded-2xl border border-slate-700 shadow-inner">
                         <span class="theme-text-primary block mb-1">Lượt Xuất kho:</span>
                         <span id="trace-stat-exports" class="text-lg font-bold theme-text-primary">0</span>
                     </div>
-                    <div class="bg-slate-800/80 p-3 rounded-2xl border border-slate-700/50">
+                    <div class="bg-slate-800/90 p-3.5 rounded-2xl border border-slate-700 shadow-inner">
                         <span class="text-ios-orange block mb-1" id="trace-stat-4-label">Khối lượng luân chuyển:</span>
                         <span id="trace-stat-4-val" class="text-lg font-bold text-ios-orange">0</span>
                     </div>
                 </div>
             </div>
 
-            <div class="glass-card rounded-3xl shadow-ios-sm border border-white/80 dark:border-slate-800 overflow-hidden">
+            <div class="glass-card rounded-3xl shadow-ios-sm overflow-hidden">
                 <div class="p-4 border-b border-slate-200/50 dark:border-slate-800 bg-white/40 dark:bg-slate-800/40">
                     <h3 class="font-bold text-slate-900 dark:text-white text-xs sm:text-sm flex items-center space-x-2">
                         <i class="fa-solid fa-list-ul text-ios-orange"></i>
@@ -734,14 +782,14 @@
     </main>
 
     <!-- MODAL 1: ADD / EDIT ITEM (iOS Glass Popup) -->
-    <div id="modal-item" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="glass-card bg-white/95 dark:bg-slate-900/95 rounded-3xl shadow-ios-lg max-w-md w-full overflow-hidden transform transition-all space-y-4 border border-white dark:border-slate-700">
+    <div id="modal-item" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl shadow-ios-lg max-w-md w-full overflow-hidden transform transition-all space-y-4 border border-white/20">
             <div class="px-6 py-4 bg-slate-100/80 dark:bg-slate-800/80 border-b border-slate-200/50 dark:border-slate-700 flex items-center justify-between">
                 <h3 id="modal-item-title" class="font-bold text-sm sm:text-base text-slate-900 dark:text-white flex items-center space-x-2">
                     <i class="fa-solid fa-box theme-text-primary"></i>
                     <span>Thêm Vật Tư Mới</span>
                 </h3>
-                <button onclick="closeItemModal()" class="w-7 h-7 bg-slate-200/70 dark:bg-slate-700 hover:bg-slate-300 rounded-full flex items-center justify-center text-slate-500 dark:text-slate-300 transition-colors">
+                <button onclick="closeItemModal()" class="w-7 h-7 bg-slate-200/70 dark:bg-slate-700 hover:bg-slate-300 rounded-full flex items-center justify-center text-slate-500 dark:text-slate-300 transition-colors shadow-sm">
                     <i class="fa-solid fa-xmark text-xs"></i>
                 </button>
             </div>
@@ -751,7 +799,7 @@
 
                 <div class="space-y-1.5">
                     <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Danh Mục <span class="text-ios-red">*</span></label>
-                    <select id="item-category" required onchange="generateCodeForCategory()" class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-semibold focus:ring-2 focus:ring-ios-blue outline-none">
+                    <select id="item-category" required onchange="generateCodeForCategory()" class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-semibold focus:ring-2 focus:ring-ios-blue outline-none shadow-inner">
                         <option value="ME">Kỹ thuật ME</option>
                         <option value="BM">Tòa nhà BM</option>
                         <option value="AC">Điện lạnh AC</option>
@@ -763,11 +811,11 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div class="space-y-1.5">
                         <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Mã Vật Tư <span class="text-ios-red">*</span></label>
-                        <input type="text" id="item-code" required readonly class="w-full font-mono font-bold theme-text-primary bg-slate-200/60 dark:bg-slate-800/60 rounded-2xl px-3.5 py-2.5 text-xs outline-none cursor-not-allowed">
+                        <input type="text" id="item-code" required readonly class="w-full font-mono font-bold theme-text-primary bg-slate-200/60 dark:bg-slate-800/60 rounded-2xl px-3.5 py-2.5 text-xs outline-none cursor-not-allowed shadow-inner">
                     </div>
                     <div class="space-y-1.5">
                         <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Đơn Vị Tính <span class="text-ios-red">*</span></label>
-                        <select id="item-unit" required class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-ios-blue outline-none">
+                        <select id="item-unit" required class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-ios-blue outline-none shadow-inner">
                             <option value="Cái">Cái</option>
                             <option value="Bộ">Bộ</option>
                             <option value="Mét">Mét</option>
@@ -784,21 +832,21 @@
 
                 <div class="space-y-1.5">
                     <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Tên Vật Tư <span class="text-ios-red">*</span></label>
-                    <input type="text" id="item-name" required placeholder="Nhập tên vật tư..." class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none">
+                    <input type="text" id="item-name" required placeholder="Nhập tên vật tư..." class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none shadow-inner">
                 </div>
 
                 <div class="grid grid-cols-3 gap-3">
                     <div class="space-y-1.5">
                         <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Tồn Đầu</label>
-                        <input type="number" id="item-quantity" min="0" value="0" class="w-full px-3 py-2 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none">
+                        <input type="number" id="item-quantity" min="0" value="0" class="w-full px-3 py-2 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none shadow-inner">
                     </div>
                     <div class="space-y-1.5">
                         <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Tối Thiểu</label>
-                        <input type="number" id="item-min-stock" min="0" value="5" class="w-full px-3 py-2 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none">
+                        <input type="number" id="item-min-stock" min="0" value="5" class="w-full px-3 py-2 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none shadow-inner">
                     </div>
                     <div class="space-y-1.5">
                         <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Đơn Giá</label>
-                        <input type="number" id="item-price" min="0" value="0" class="w-full px-3 py-2 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none">
+                        <input type="number" id="item-price" min="0" value="0" class="w-full px-3 py-2 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-blue outline-none shadow-inner">
                     </div>
                 </div>
 
@@ -814,14 +862,14 @@
     </div>
 
     <!-- MODAL 2: STOCKTAKE PERFORMER SELECTION -->
-    <div id="modal-stocktake" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="glass-card bg-white/95 dark:bg-slate-900/95 rounded-3xl shadow-ios-lg max-w-md w-full overflow-hidden transform transition-all space-y-4 border border-white dark:border-slate-700">
+    <div id="modal-stocktake" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl shadow-ios-lg max-w-md w-full overflow-hidden transform transition-all space-y-4 border border-white/20">
             <div class="px-6 py-4 bg-slate-100/80 dark:bg-slate-800/80 border-b border-slate-200/50 dark:border-slate-700 flex items-center justify-between">
                 <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white flex items-center space-x-2">
                     <i class="fa-solid fa-clipboard-check text-ios-purple"></i>
                     <span>Tạo Phiếu Kiểm Kê Kho</span>
                 </h3>
-                <button onclick="closeStocktakeModal()" class="w-7 h-7 bg-slate-200/70 dark:bg-slate-700 hover:bg-slate-300 rounded-full flex items-center justify-center text-slate-500 dark:text-slate-300 transition-colors">
+                <button onclick="closeStocktakeModal()" class="w-7 h-7 bg-slate-200/70 dark:bg-slate-700 hover:bg-slate-300 rounded-full flex items-center justify-center text-slate-500 dark:text-slate-300 transition-colors shadow-sm">
                     <i class="fa-solid fa-xmark text-xs"></i>
                 </button>
             </div>
@@ -829,7 +877,7 @@
             <div class="p-6 pt-0 space-y-4">
                 <div class="space-y-1.5 relative">
                     <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Trưởng Ban / Cán Bộ Kiểm Kê <span class="text-ios-red">*</span></label>
-                    <input type="text" id="stocktake-performer-input" placeholder="Gõ tên để chọn cán bộ..." autocomplete="off" onfocus="searchStaff('stocktake-performer-input')" oninput="searchStaff('stocktake-performer-input')" class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-purple outline-none">
+                    <input type="text" id="stocktake-performer-input" placeholder="Gõ tên để chọn cán bộ..." autocomplete="off" onfocus="searchStaff('stocktake-performer-input')" oninput="searchStaff('stocktake-performer-input')" class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium focus:ring-2 focus:ring-ios-purple outline-none shadow-inner">
                     <div id="stocktake-performer-input-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border border-slate-200 dark:border-slate-700 rounded-2xl shadow-ios-lg z-30 max-h-48 overflow-y-auto custom-scrollbar divide-y divide-slate-100 dark:divide-slate-700"></div>
                 </div>
 
@@ -845,14 +893,14 @@
     </div>
 
     <!-- MODAL 3: SYSTEM SETTINGS MODAL -->
-    <div id="modal-settings" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="glass-card bg-white/95 dark:bg-slate-900/95 rounded-3xl shadow-ios-lg max-w-lg w-full overflow-hidden transform transition-all space-y-4 border border-white dark:border-slate-700">
+    <div id="modal-settings" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl shadow-ios-lg max-w-lg w-full overflow-hidden transform transition-all space-y-4 border border-white/20">
             <div class="px-6 py-4 bg-slate-100/80 dark:bg-slate-800/80 border-b border-slate-200/50 dark:border-slate-700 flex items-center justify-between">
                 <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white flex items-center space-x-2">
                     <i class="fa-solid fa-sliders theme-text-primary"></i>
                     <span>Cài Đặt Hệ Thống Giao Diện</span>
                 </h3>
-                <button onclick="closeSettingsModal()" class="w-7 h-7 bg-slate-200/70 dark:bg-slate-700 hover:bg-slate-300 rounded-full flex items-center justify-center text-slate-500 dark:text-slate-300 transition-colors">
+                <button onclick="closeSettingsModal()" class="w-7 h-7 bg-slate-200/70 dark:bg-slate-700 hover:bg-slate-300 rounded-full flex items-center justify-center text-slate-500 dark:text-slate-300 transition-colors shadow-sm">
                     <i class="fa-solid fa-xmark text-xs"></i>
                 </button>
             </div>
@@ -861,25 +909,25 @@
                 <!-- 1. App Title Customization -->
                 <div class="space-y-1.5">
                     <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Tên Ứng Dụng</label>
-                    <input type="text" id="setting-app-name" placeholder="QUẢN LÝ KHO KĨ THUẬT" class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-bold text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ios-blue outline-none">
+                    <input type="text" id="setting-app-name" placeholder="QUẢN LÝ KHO KĨ THUẬT" class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-bold text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ios-blue outline-none shadow-inner">
                 </div>
 
                 <!-- 2. App Subtitle Customization -->
                 <div class="space-y-1.5">
                     <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Tiêu Đề Phụ (Subtitle)</label>
-                    <input type="text" id="setting-app-subtitle" placeholder="Đồng bộ Cloud Firestore • iOS Interface" class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ios-blue outline-none">
+                    <input type="text" id="setting-app-subtitle" placeholder="Đồng bộ Cloud Firestore • iOS Interface" class="w-full px-3.5 py-2.5 bg-slate-100/80 dark:bg-slate-800/80 border-0 rounded-2xl text-xs font-medium text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-ios-blue outline-none shadow-inner">
                 </div>
 
                 <!-- 3. Dark/Light Mode Toggle -->
-                <div class="flex items-center justify-between p-3.5 bg-slate-100/80 dark:bg-slate-800/80 rounded-2xl">
+                <div class="flex items-center justify-between p-3.5 bg-slate-100/80 dark:bg-slate-800/80 rounded-2xl shadow-inner border border-slate-200/50 dark:border-slate-700/50">
                     <div class="flex items-center space-x-2.5">
                         <i id="theme-mode-icon" class="fa-solid fa-sun text-ios-orange text-base"></i>
                         <div>
                             <p class="text-xs font-bold text-slate-800 dark:text-slate-200">Giao Diện Sáng / Tối</p>
-                            <p class="text-[11px] text-slate-500 dark:text-slate-400">Chuyển đổi Dark Mode toàn hệ thống</p>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400">Hiệu ứng bóng gương trong suốt chế độ tối</p>
                         </div>
                     </div>
-                    <button type="button" onclick="toggleDarkMode()" id="btn-toggle-dark" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-slate-300 dark:bg-ios-blue transition-colors duration-200 ease-in-out focus:outline-none">
+                    <button type="button" onclick="toggleDarkMode()" id="btn-toggle-dark" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-slate-300 dark:bg-ios-blue transition-colors duration-200 ease-in-out focus:outline-none shadow-sm">
                         <span id="dark-toggle-circle" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0 dark:translate-x-5"></span>
                     </button>
                 </div>
@@ -888,19 +936,19 @@
                 <div class="space-y-2">
                     <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Chủ Đề Màu Sắc (Accent Color)</label>
                     <div class="grid grid-cols-4 gap-2.5">
-                        <button type="button" onclick="setAppThemeColor('#007aff', '#0062cc')" class="p-2.5 rounded-2xl bg-ios-blue/10 border-2 border-ios-blue flex flex-col items-center justify-center space-y-1 text-ios-blue font-semibold text-xs ios-btn-active">
+                        <button type="button" onclick="setAppThemeColor('#007aff', '#0062cc')" class="p-2.5 rounded-2xl bg-ios-blue/10 border-2 border-ios-blue flex flex-col items-center justify-center space-y-1 text-ios-blue font-semibold text-xs ios-btn-active shadow-sm">
                             <span class="w-4 h-4 rounded-full bg-ios-blue shadow-sm"></span>
                             <span>iOS Blue</span>
                         </button>
-                        <button type="button" onclick="setAppThemeColor('#34c759', '#2aa147')" class="p-2.5 rounded-2xl bg-ios-green/10 border-2 border-transparent hover:border-ios-green flex flex-col items-center justify-center space-y-1 text-ios-green font-semibold text-xs ios-btn-active">
+                        <button type="button" onclick="setAppThemeColor('#34c759', '#2aa147')" class="p-2.5 rounded-2xl bg-ios-green/10 border-2 border-transparent hover:border-ios-green flex flex-col items-center justify-center space-y-1 text-ios-green font-semibold text-xs ios-btn-active shadow-sm">
                             <span class="w-4 h-4 rounded-full bg-ios-green shadow-sm"></span>
                             <span>Emerald</span>
                         </button>
-                        <button type="button" onclick="setAppThemeColor('#af52de', '#8e3cb9')" class="p-2.5 rounded-2xl bg-ios-purple/10 border-2 border-transparent hover:border-ios-purple flex flex-col items-center justify-center space-y-1 text-ios-purple font-semibold text-xs ios-btn-active">
+                        <button type="button" onclick="setAppThemeColor('#af52de', '#8e3cb9')" class="p-2.5 rounded-2xl bg-ios-purple/10 border-2 border-transparent hover:border-ios-purple flex flex-col items-center justify-center space-y-1 text-ios-purple font-semibold text-xs ios-btn-active shadow-sm">
                             <span class="w-4 h-4 rounded-full bg-ios-purple shadow-sm"></span>
                             <span>Purple</span>
                         </button>
-                        <button type="button" onclick="setAppThemeColor('#ff9500', '#d67d00')" class="p-2.5 rounded-2xl bg-ios-orange/10 border-2 border-transparent hover:border-ios-orange flex flex-col items-center justify-center space-y-1 text-ios-orange font-semibold text-xs ios-btn-active">
+                        <button type="button" onclick="setAppThemeColor('#ff9500', '#d67d00')" class="p-2.5 rounded-2xl bg-ios-orange/10 border-2 border-transparent hover:border-ios-orange flex flex-col items-center justify-center space-y-1 text-ios-orange font-semibold text-xs ios-btn-active shadow-sm">
                             <span class="w-4 h-4 rounded-full bg-ios-orange shadow-sm"></span>
                             <span>Sunset</span>
                         </button>
@@ -973,7 +1021,7 @@
             document.getElementById('display-app-subtitle').innerText = appSettings.appSubtitle;
             document.getElementById('app-title-tag').innerText = appSettings.appName + ' (SHP Edition)';
 
-            // Apply Dark Mode
+            // Apply Dark Mode with mirror effect class
             const htmlEl = document.documentElement;
             const darkIcon = document.getElementById('theme-mode-icon');
             if (appSettings.darkMode) {
@@ -1114,19 +1162,20 @@
             });
         }
 
-        // 3. FADE DIM ZOOM PAGE TRANSITION SYSTEM
+        // 3. FADE DIM ZOOM PAGE TRANSITION & COLOR-CODED TAB SYSTEM
         function switchTab(tabId) {
             if (currentTab === tabId) return;
 
             document.querySelectorAll('.nav-tab').forEach(btn => {
-                btn.classList.remove('bg-white', 'dark:bg-slate-700', 'text-slate-900', 'dark:text-white', 'shadow-ios-sm');
-                btn.classList.add('text-slate-600', 'dark:text-slate-400');
+                btn.classList.remove('bg-white', 'dark:bg-slate-700', 'text-slate-900', 'dark:text-white', 'shadow-ios-sm', 'border-ios-blue', 'border-ios-green', 'border-ios-teal', 'border-ios-orange', 'border-ios-purple', 'border-ios-pink', 'border-ios-indigo');
+                btn.classList.add('text-slate-600', 'dark:text-slate-300');
             });
 
             const activeBtn = document.getElementById(`tab-${tabId}`);
             if (activeBtn) {
-                activeBtn.classList.remove('text-slate-600', 'dark:text-slate-400');
-                activeBtn.classList.add('bg-white', 'dark:bg-slate-700', 'text-slate-900', 'dark:text-white', 'shadow-ios-sm');
+                activeBtn.classList.remove('text-slate-600', 'dark:text-slate-300');
+                const borderColorClass = 'border-' + activeBtn.getAttribute('data-color');
+                activeBtn.classList.add('bg-white', 'dark:bg-slate-700/90', 'text-slate-900', 'dark:text-white', 'shadow-ios-sm', borderColorClass);
             }
 
             const currentView = document.getElementById(`view-${currentTab}`);
@@ -1230,7 +1279,7 @@
                                 : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-ios-green/10 text-ios-green">An toàn</span>`}
                         </td>
                         <td class="px-4 py-3 text-right">
-                            <button onclick="quickSelectImport('${item.id}')" class="bg-ios-green/10 hover:bg-ios-green hover:text-white text-ios-green px-2.5 py-1 rounded-xl text-[11px] font-semibold transition-all ios-btn-active">
+                            <button onclick="quickSelectImport('${item.id}')" class="bg-ios-green/10 hover:bg-ios-green hover:text-white text-ios-green px-2.5 py-1 rounded-xl text-[11px] font-semibold transition-all ios-btn-active shadow-sm">
                                 + Nhập
                             </button>
                         </td>
@@ -1248,8 +1297,8 @@
 
             const recent = historyData.slice(0, 6);
             container.innerHTML = recent.map(h => `
-                <div class="flex items-center space-x-3 text-xs bg-slate-100/50 dark:bg-slate-800/50 p-2.5 rounded-2xl border border-slate-200/40 dark:border-slate-700/40">
-                    <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${h.type === 'IMPORT' ? 'bg-ios-green/10 text-ios-green' : h.type === 'EXPORT' ? 'theme-badge-bg theme-text-primary' : 'bg-ios-purple/10 text-ios-purple'}">
+                <div class="flex items-center space-x-3 text-xs bg-slate-100/60 dark:bg-slate-800/60 p-2.5 rounded-2xl border border-slate-200/40 dark:border-slate-700/40 shadow-inner">
+                    <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${h.type === 'IMPORT' ? 'bg-ios-green/10 text-ios-green' : h.type === 'EXPORT' ? 'theme-badge-bg theme-text-primary' : 'bg-ios-purple/10 text-ios-purple'} shadow-sm">
                         <i class="fa-solid ${h.type === 'IMPORT' ? 'fa-arrow-down' : h.type === 'EXPORT' ? 'fa-arrow-up' : 'fa-clipboard-check'} text-xs"></i>
                     </div>
                     <div class="flex-1 min-w-0">
@@ -1298,23 +1347,23 @@
                     <tr class="hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors text-xs">
                         <td class="px-5 py-3.5 font-mono font-bold text-slate-700 dark:text-slate-300">${item.code || '-'}</td>
                         <td class="px-5 py-3.5 font-semibold text-slate-900 dark:text-slate-100">${item.name || '-'}</td>
-                        <td class="px-5 py-3.5"><span class="bg-slate-200/60 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-md font-bold text-[10px]">${item.category || 'OTHER'}</span></td>
+                        <td class="px-5 py-3.5"><span class="bg-slate-200/60 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-md font-bold text-[10px] shadow-sm">${item.category || 'OTHER'}</span></td>
                         <td class="px-5 py-3.5 text-center text-slate-600 dark:text-slate-400">${item.unit || 'Cái'}</td>
                         <td class="px-5 py-3.5 text-right font-bold text-slate-900 dark:text-slate-100">${qty.toLocaleString()}</td>
                         <td class="px-5 py-3.5 text-right font-mono text-slate-600 dark:text-slate-400">${(item.price || 0).toLocaleString()} ₫</td>
                         <td class="px-5 py-3.5 text-center">${statusBadge}</td>
                         <td class="px-5 py-3.5 text-right">
                             <div class="flex items-center justify-end space-x-1.5">
-                                <button onclick="quickSelectImport('${item.id}')" class="w-7 h-7 bg-ios-green text-white rounded-xl transition-transform ios-btn-active flex items-center justify-center shadow-ios-sm" title="Nhập kho">
+                                <button onclick="quickSelectImport('${item.id}')" class="w-7 h-7 bg-ios-green text-white rounded-xl transition-transform ios-btn-active flex items-center justify-center shadow-sm" title="Nhập kho">
                                     <i class="fa-solid fa-plus text-[10px]"></i>
                                 </button>
-                                <button onclick="quickSelectExport('${item.id}')" class="w-7 h-7 theme-bg-primary text-white rounded-xl transition-transform ios-btn-active flex items-center justify-center shadow-ios-sm" title="Xuất kho">
+                                <button onclick="quickSelectExport('${item.id}')" class="w-7 h-7 theme-bg-primary text-white rounded-xl transition-transform ios-btn-active flex items-center justify-center shadow-sm" title="Xuất kho">
                                     <i class="fa-solid fa-minus text-[10px]"></i>
                                 </button>
-                                <button onclick="editItem('${item.id}')" class="w-7 h-7 bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-300 transition-transform ios-btn-active flex items-center justify-center shadow-ios-sm" title="Sửa">
+                                <button onclick="editItem('${item.id}')" class="w-7 h-7 bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-300 transition-transform ios-btn-active flex items-center justify-center shadow-sm" title="Sửa">
                                     <i class="fa-solid fa-pen text-[10px]"></i>
                                 </button>
-                                <button onclick="deleteItem('${item.id}', '${item.name}')" class="w-7 h-7 bg-ios-red/10 text-ios-red hover:bg-ios-red hover:text-white rounded-xl transition-all ios-btn-active flex items-center justify-center" title="Xóa">
+                                <button onclick="deleteItem('${item.id}', '${item.name}')" class="w-7 h-7 bg-ios-red/10 text-ios-red hover:bg-ios-red hover:text-white rounded-xl transition-all ios-btn-active flex items-center justify-center shadow-sm" title="Xóa">
                                     <i class="fa-solid fa-trash text-[10px]"></i>
                                 </button>
                             </div>
@@ -1324,18 +1373,31 @@
             }).join('');
         }
 
-        function openItemModal(isEdit = false) {
-            const modal = document.getElementById('modal-item');
-            const title = document.getElementById('modal-item-title');
-            if (!isEdit) {
-                document.getElementById('form-item').reset();
-                document.getElementById('item-id').value = '';
-                title.innerHTML = `<i class="fa-solid fa-box theme-text-primary"></i> <span>Thêm Vật Tư Mới</span>`;
+        // Additional helper functions for interactive forms, search, excel export/import, etc.
+        function openItemModal(id = null) {
+            document.getElementById('item-id').value = id || '';
+            if (!id) {
+                document.getElementById('modal-item-title').innerHTML = `<i class="fa-solid fa-box theme-text-primary"></i><span>Thêm Vật Tư Mới</span>`;
+                document.getElementById('item-category').value = 'ME';
+                document.getElementById('item-name').value = '';
+                document.getElementById('item-quantity').value = 0;
+                document.getElementById('item-min-stock').value = 5;
+                document.getElementById('item-price').value = 0;
                 generateCodeForCategory();
             } else {
-                title.innerHTML = `<i class="fa-solid fa-pen-to-square theme-text-primary"></i> <span>Chỉnh Sửa Vật Tư</span>`;
+                document.getElementById('modal-item-title').innerHTML = `<i class="fa-solid fa-pen theme-text-primary"></i><span>Cập Nhật Vật Tư</span>`;
+                const item = inventoryData.find(i => i.id === id);
+                if (item) {
+                    document.getElementById('item-category').value = item.category || 'ME';
+                    document.getElementById('item-code').value = item.code || '';
+                    document.getElementById('item-name').value = item.name || '';
+                    document.getElementById('item-unit').value = item.unit || 'Cái';
+                    document.getElementById('item-quantity').value = item.quantity || 0;
+                    document.getElementById('item-min-stock').value = item.minStock || 5;
+                    document.getElementById('item-price').value = item.price || 0;
+                }
             }
-            modal.classList.remove('hidden');
+            document.getElementById('modal-item').classList.remove('hidden');
         }
 
         function closeItemModal() {
@@ -1343,61 +1405,33 @@
         }
 
         function generateCodeForCategory() {
-            if (document.getElementById('item-id').value) return; // Ignore if editing
-            const cat = document.getElementById('item-category').value || 'ME';
-            const catItems = inventoryData.filter(i => i.category === cat);
-            let maxNum = 0;
-            catItems.forEach(i => {
-                const match = (i.code || '').match(/\d+/);
-                if (match) {
-                    const val = parseInt(match[0], 10);
-                    if (val > maxNum) maxNum = val;
-                }
-            });
-            const nextCode = `${cat}-${String(maxNum + 1).padStart(3, '0')}`;
-            document.getElementById('item-code').value = nextCode;
-        }
-
-        function editItem(id) {
-            const item = inventoryData.find(i => i.id === id);
-            if (!item) return;
-
-            document.getElementById('item-id').value = item.id;
-            document.getElementById('item-category').value = item.category || 'ME';
-            document.getElementById('item-code').value = item.code || '';
-            document.getElementById('item-name').value = item.name || '';
-            document.getElementById('item-unit').value = item.unit || 'Cái';
-            document.getElementById('item-quantity').value = item.quantity || 0;
-            document.getElementById('item-min-stock').value = item.minStock || 5;
-            document.getElementById('item-price').value = item.price || 0;
-
-            openItemModal(true);
+            const cat = document.getElementById('item-category').value;
+            const existingInCat = inventoryData.filter(i => i.category === cat);
+            const nextNum = existingInCat.length + 1;
+            const code = `${cat}-${String(nextNum).padStart(3, '0')}`;
+            document.getElementById('item-code').value = code;
         }
 
         async function handleSaveItem(e) {
             e.preventDefault();
             const id = document.getElementById('item-id').value;
             const category = document.getElementById('item-category').value;
-            const code = document.getElementById('item-code').value.trim();
+            const code = document.getElementById('item-code').value;
             const name = document.getElementById('item-name').value.trim();
             const unit = document.getElementById('item-unit').value;
-            const quantity = parseInt(document.getElementById('item-quantity').value, 10) || 0;
-            const minStock = parseInt(document.getElementById('item-min-stock').value, 10) || 0;
+            const quantity = parseInt(document.getElementById('item-quantity').value) || 0;
+            const minStock = parseInt(document.getElementById('item-min-stock').value) || 5;
             const price = parseFloat(document.getElementById('item-price').value) || 0;
+
+            const payload = { category, code, name, unit, quantity, minStock, price, updatedAt: new Date().toISOString() };
 
             try {
                 if (id) {
-                    await db.collection("inventory").doc(id).update({
-                        category, name, unit, minStock, price,
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    showToast("Đã cập nhật thông tin vật tư!");
+                    await db.collection("inventory").doc(id).update(payload);
+                    showToast("Cập nhật vật tư thành công!");
                 } else {
-                    await db.collection("inventory").add({
-                        category, code, name, unit, quantity, minStock, price,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    showToast("Đã thêm vật tư thành công!");
+                    await db.collection("inventory").add(payload);
+                    showToast("Thêm vật tư mới thành công!");
                 }
                 closeItemModal();
             } catch (err) {
@@ -1405,173 +1439,166 @@
             }
         }
 
+        function editItem(id) {
+            openItemModal(id);
+        }
+
         async function deleteItem(id, name) {
-            if (confirm(`Bạn có chắc chắn muốn xóa vật tư "${name}"? Hành động này không thể hoàn tác.`)) {
+            if (confirm(`Bạn có chắc chắn muốn xóa vật tư "${name}" khỏi kho không?`)) {
                 try {
                     await db.collection("inventory").doc(id).delete();
-                    showToast(`Đã xóa vật tư "${name}"`);
+                    showToast("Đã xóa vật tư thành công!");
                 } catch (err) {
                     showToast("Lỗi khi xóa: " + err.message, "error");
                 }
             }
         }
 
-        // 6. SMART AUTOCOMPLETE & SEARCH DROPDOWNS
-        function searchSmart(type) {
-            const query = document.getElementById(`${type}-search`).value.toLowerCase().trim();
-            const dropdown = document.getElementById(`${type}-dropdown`);
-
-            if (!query) {
-                dropdown.classList.add('hidden');
-                return;
-            }
-
-            const results = inventoryData.filter(i => 
-                (i.name || '').toLowerCase().includes(query) || 
-                (i.code || '').toLowerCase().includes(query)
-            );
-
-            if (results.length === 0) {
-                dropdown.innerHTML = `<div class="p-3 text-xs text-slate-400 italic">Không tìm thấy vật tư</div>`;
-            } else {
-                dropdown.innerHTML = results.map(i => `
-                    <div onclick="selectSmartItem('${type}', '${i.id}')" class="p-3 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer transition-colors flex items-center justify-between text-xs">
-                        <div>
-                            <span class="font-mono font-bold theme-text-primary">${i.code}</span> - <span class="font-semibold text-slate-800 dark:text-slate-200">${i.name}</span>
-                        </div>
-                        <span class="text-slate-500 font-medium">Tồn: <strong class="text-slate-800 dark:text-slate-200">${i.quantity || 0}</strong> ${i.unit || 'Cái'}</span>
-                    </div>
-                `).join('');
-            }
-            dropdown.classList.remove('hidden');
-        }
-
-        function selectSmartItem(type, id) {
-            const item = inventoryData.find(i => i.id === id);
-            if (!item) return;
-
-            document.getElementById(`${type}-selected-item-id`).value = item.id;
-            document.getElementById(`${type}-search`).value = `${item.code} - ${item.name}`;
-            document.getElementById(`${type}-dropdown`).classList.add('hidden');
-
-            const badge = document.getElementById(`${type}-selected-badge`);
-            document.getElementById(`${type}-badge-code`).innerText = item.code;
-            document.getElementById(`${type}-badge-name`).innerText = item.name;
-            document.getElementById(`${type}-badge-qty`).innerText = `${item.quantity || 0} ${item.unit || 'Cái'}`;
-            badge.classList.remove('hidden');
-        }
-
-        function searchStaff(inputId) {
-            const input = document.getElementById(inputId);
-            const query = removeVietnameseTones(input.value.trim());
-            const dropdown = document.getElementById(`${inputId}-dropdown`);
-
-            if (!query) {
-                dropdown.classList.add('hidden');
-                return;
-            }
-
-            const results = EMPLOYEE_LIST.filter(emp => removeVietnameseTones(emp).includes(query));
-
-            if (results.length === 0) {
-                dropdown.innerHTML = `<div class="p-2.5 text-xs text-slate-400 italic">Không tìm thấy nhân sự</div>`;
-            } else {
-                dropdown.innerHTML = results.map(emp => `
-                    <div onclick="selectStaff('${inputId}', '${emp}')" class="p-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer transition-colors text-xs font-semibold text-slate-800 dark:text-slate-200">
-                        <i class="fa-solid fa-user-check mr-2 text-slate-400"></i>${emp}
-                    </div>
-                `).join('');
-            }
-            dropdown.classList.remove('hidden');
-        }
-
-        function selectStaff(inputId, name) {
-            document.getElementById(inputId).value = name;
-            document.getElementById(`${inputId}-dropdown`).classList.add('hidden');
-        }
-
-        function setupOutsideClicks() {
-            document.addEventListener('click', (e) => {
-                ['import', 'export'].forEach(type => {
-                    const searchEl = document.getElementById(`${type}-search`);
-                    const dropdownEl = document.getElementById(`${type}-dropdown`);
-                    if (searchEl && dropdownEl && !searchEl.contains(e.target) && !dropdownEl.contains(e.target)) {
-                        dropdownEl.classList.add('hidden');
-                    }
-                });
-
-                ['import-performer', 'export-performer', 'stocktake-performer-input'].forEach(id => {
-                    const inputEl = document.getElementById(id);
-                    const dropdownEl = document.getElementById(`${id}-dropdown`);
-                    if (inputEl && dropdownEl && !inputEl.contains(e.target) && !dropdownEl.contains(e.target)) {
-                        dropdownEl.classList.add('hidden');
-                    }
-                });
-            });
-        }
-
         function quickSelectImport(id) {
             switchTab('import');
-            selectSmartItem('import', id);
+            const item = inventoryData.find(i => i.id === id);
+            if (item) {
+                document.getElementById('import-search').value = `${item.code} - ${item.name}`;
+                document.getElementById('import-selected-item-id').value = item.id;
+                document.getElementById('import-selected-badge').classList.remove('hidden');
+                document.getElementById('import-badge-code').innerText = item.code;
+                document.getElementById('import-badge-name').innerText = item.name;
+                document.getElementById('import-badge-qty').innerText = `${item.quantity || 0} ${item.unit || 'Cái'}`;
+            }
         }
 
         function quickSelectExport(id) {
             switchTab('export');
-            selectSmartItem('export', id);
+            const item = inventoryData.find(i => i.id === id);
+            if (item) {
+                document.getElementById('export-search').value = `${item.code} - ${item.name}`;
+                document.getElementById('export-selected-item-id').value = item.id;
+                document.getElementById('export-selected-badge').classList.remove('hidden');
+                document.getElementById('export-badge-code').innerText = item.code;
+                document.getElementById('export-badge-name').innerText = item.name;
+                document.getElementById('export-badge-qty').innerText = `${item.quantity || 0} ${item.unit || 'Cái'}`;
+            }
         }
 
-        // 7. IMPORT & EXPORT TRANSACTIONS
+        function searchSmart(mode) {
+            const query = document.getElementById(`${mode}-search`).value.toLowerCase().trim();
+            const dropdown = document.getElementById(`${mode}-dropdown`);
+            if (!query) {
+                dropdown.classList.add('hidden');
+                return;
+            }
+
+            const matched = inventoryData.filter(i => 
+                (i.name && removeVietnameseTones(i.name).includes(removeVietnameseTones(query))) || 
+                (i.code && i.code.toLowerCase().includes(query))
+            );
+
+            if (matched.length === 0) {
+                dropdown.innerHTML = `<div class="p-3 text-xs text-slate-400 italic">Không tìm thấy vật tư phù hợp.</div>`;
+            } else {
+                dropdown.innerHTML = matched.map(i => `
+                    <div onclick="selectSmartItem('${mode}', '${i.id}', '${i.code}', '${i.name.replace(/'/g, "\\'")}', ${i.quantity || 0}, '${i.unit || 'Cái'}')" class="p-3 hover:bg-slate-100 dark:hover:bg-slate-700/80 cursor-pointer flex items-center justify-between text-xs transition-colors">
+                        <div>
+                            <span class="font-mono font-bold theme-text-primary mr-2">${i.code}</span>
+                            <span class="font-semibold text-slate-800 dark:text-slate-200">${i.name}</span>
+                        </div>
+                        <span class="text-slate-500 font-medium">Tồn: ${i.quantity || 0} ${i.unit || 'Cái'}</span>
+                    </div>
+                `).join('');
+            }
+            dropdown.classList.remove('hidden');
+        }
+
+        function selectSmartItem(mode, id, code, name, qty, unit) {
+            document.getElementById(`${mode}-search`).value = `${code} - ${name}`;
+            document.getElementById(`${mode}-selected-item-id`).value = id;
+            document.getElementById(`${mode}-dropdown`).classList.add('hidden');
+
+            const badge = document.getElementById(`${mode}-selected-badge`);
+            badge.classList.remove('hidden');
+            document.getElementById(`${mode}-badge-code`).innerText = code;
+            document.getElementById(`${mode}-badge-name`).innerText = name;
+            document.getElementById(`${mode}-badge-qty`).innerText = `${qty} ${unit}`;
+        }
+
+        function searchStaff(inputId) {
+            const query = document.getElementById(inputId).value.toLowerCase().trim();
+            const dropdownId = inputId + '-dropdown';
+            const dropdown = document.getElementById(dropdownId);
+            if (!dropdown) return;
+
+            const matched = EMPLOYEE_LIST.filter(emp => removeVietnameseTones(emp).includes(removeVietnameseTones(query)));
+
+            if (matched.length === 0) {
+                dropdown.classList.add('hidden');
+                return;
+            }
+
+            dropdown.innerHTML = matched.map(emp => `
+                <div onclick="selectStaffName('${inputId}', '${emp}')" class="p-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer text-xs font-medium text-slate-800 dark:text-slate-200">
+                    <i class="fa-solid fa-user-tie text-slate-400 mr-2"></i>${emp}
+                </div>
+            `).join('');
+            dropdown.classList.remove('hidden');
+        }
+
+        function selectStaffName(inputId, name) {
+            document.getElementById(inputId).value = name;
+            const dropdown = document.getElementById(inputId + '-dropdown');
+            if (dropdown) dropdown.classList.add('hidden');
+        }
+
         async function handleImport(e) {
             e.preventDefault();
             const itemId = document.getElementById('import-selected-item-id').value;
-            const qty = parseInt(document.getElementById('import-qty').value, 10);
-            const price = parseFloat(document.getElementById('import-price').value);
+            const qty = parseInt(document.getElementById('import-qty').value);
+            const priceInput = document.getElementById('import-price').value;
             const supplier = document.getElementById('import-supplier').value.trim();
             const performer = document.getElementById('import-performer').value.trim();
             const note = document.getElementById('import-note').value.trim();
 
             const item = inventoryData.find(i => i.id === itemId);
             if (!item) {
-                showToast("Vui lòng chọn vật tư từ danh sách!", "error");
+                showToast("Vui lòng chọn vật tư hợp lệ từ danh sách!", "error");
                 return;
             }
 
+            const newQty = (item.quantity || 0) + qty;
+            const newPrice = priceInput !== '' ? parseFloat(priceInput) : (item.price || 0);
+
+            const batch = db.batch();
+            const itemRef = db.collection("inventory").doc(itemId);
+            batch.update(itemRef, { quantity: newQty, price: newPrice, updatedAt: new Date().toISOString() });
+
+            const historyRef = db.collection("history").doc();
+            batch.set(historyRef, {
+                type: 'IMPORT',
+                itemId: itemId,
+                itemCode: item.code,
+                itemName: item.name,
+                qty: qty,
+                price: newPrice,
+                partner: supplier || 'Nhà cung cấp ngoài',
+                performer: performer,
+                note: note,
+                timestamp: new Date().toISOString()
+            });
+
             try {
-                const batch = db.batch();
-                const itemRef = db.collection("inventory").doc(itemId);
-                const updateData = { quantity: (item.quantity || 0) + qty };
-                if (!isNaN(price) && price > 0) updateData.price = price;
-
-                batch.update(itemRef, updateData);
-
-                const historyRef = db.collection("history").doc();
-                batch.set(historyRef, {
-                    type: 'IMPORT',
-                    itemId: item.id,
-                    itemCode: item.code,
-                    itemName: item.name,
-                    qty: qty,
-                    partner: supplier || 'Nhà cung cấp',
-                    performer: performer,
-                    note: note,
-                    timestamp: new Date().toISOString()
-                });
-
                 await batch.commit();
-                showToast(`Nhập kho thành công ${qty} ${item.unit || 'Cái'} ${item.name}!`);
-
+                showToast(`Nhập kho thành công ${qty} ${item.unit || 'Cái'} cho "${item.name}"!`);
                 document.getElementById('form-import').reset();
                 document.getElementById('import-selected-badge').classList.add('hidden');
                 document.getElementById('import-selected-item-id').value = '';
             } catch (err) {
-                showToast("Lỗi nhập kho: " + err.message, "error");
+                showToast("Lỗi thực hiện nhập kho: " + err.message, "error");
             }
         }
 
         async function handleExport(e) {
             e.preventDefault();
             const itemId = document.getElementById('export-selected-item-id').value;
-            const qty = parseInt(document.getElementById('export-qty').value, 10);
+            const qty = parseInt(document.getElementById('export-qty').value);
             const receiver = document.getElementById('export-receiver').value.trim();
             const purpose = document.getElementById('export-purpose').value.trim();
             const performer = document.getElementById('export-performer').value.trim();
@@ -1579,55 +1606,56 @@
 
             const item = inventoryData.find(i => i.id === itemId);
             if (!item) {
-                showToast("Vui lòng chọn vật tư từ danh sách!", "error");
+                showToast("Vui lòng chọn vật tư hợp lệ từ danh sách!", "error");
                 return;
             }
 
             if ((item.quantity || 0) < qty) {
-                showToast(`Tồn kho không đủ! Số lượng khả dụng: ${item.quantity || 0}`, "error");
+                showToast(`Số lượng tồn kho không đủ (${item.quantity || 0} ${item.unit || 'Cái'})!`, "error");
                 return;
             }
 
+            const newQty = (item.quantity || 0) - qty;
+
+            const batch = db.batch();
+            const itemRef = db.collection("inventory").doc(itemId);
+            batch.update(itemRef, { quantity: newQty, updatedAt: new Date().toISOString() });
+
+            const historyRef = db.collection("history").doc();
+            batch.set(historyRef, {
+                type: 'EXPORT',
+                itemId: itemId,
+                itemCode: item.code,
+                itemName: item.name,
+                qty: qty,
+                partner: receiver,
+                purpose: purpose,
+                performer: performer,
+                note: note,
+                timestamp: new Date().toISOString()
+            });
+
             try {
-                const batch = db.batch();
-                const itemRef = db.collection("inventory").doc(itemId);
-                batch.update(itemRef, { quantity: (item.quantity || 0) - qty });
-
-                const historyRef = db.collection("history").doc();
-                batch.set(historyRef, {
-                    type: 'EXPORT',
-                    itemId: item.id,
-                    itemCode: item.code,
-                    itemName: item.name,
-                    qty: qty,
-                    partner: receiver,
-                    performer: performer,
-                    note: `${purpose ? 'Mục đích: ' + purpose + '. ' : ''}${note}`,
-                    timestamp: new Date().toISOString()
-                });
-
                 await batch.commit();
-                showToast(`Xuất kho thành công ${qty} ${item.unit || 'Cái'} ${item.name}!`);
-
+                showToast(`Xuất kho thành công ${qty} ${item.unit || 'Cái'} cho bộ phận "${receiver}"!`);
                 document.getElementById('form-export').reset();
                 document.getElementById('export-selected-badge').classList.add('hidden');
                 document.getElementById('export-selected-item-id').value = '';
             } catch (err) {
-                showToast("Lỗi xuất kho: " + err.message, "error");
+                showToast("Lỗi thực hiện xuất kho: " + err.message, "error");
             }
         }
 
-        // 8. BATCH EXCEL IMPORT FOR WAREHOUSE
+        // Excel Templates and Operations
         function downloadImportTemplate() {
-            const data = [
-                ["Mã Vật Tư", "Tên Vật Tư", "Danh Mục (ME/BM/AC/ROOM/OTHER)", "Đơn Vị Tính", "Số Lượng Nhập", "Đơn Giá (VNĐ)", "Nhà Cung Cấp", "Người Thực Hiện", "Ghi Chú"],
-                ["ME-001", "Dây điện Cadivi 2.5mm", "ME", "Mét", 100, 12000, "Cadivi Việt Nam", "Trịnh Văn HÙNG", "Nhập bổ sung kho"],
-                ["AC-001", "Gas R410A Ấn Độ 11.3kg", "AC", "Bình", 5, 1250000, "Vật tư Điện Lạnh", "Huỳnh ĐỨC", "Nhập định kỳ"]
+            const templateData = [
+                { "Mã VT": "ME-001", "Tên Vật Tư": "Cáp đồng trục RG6", "Danh Mục": "ME", "ĐVT": "Mét", "Số Lượng Nhập": 100, "Đơn Giá": 12000, "Nhà Cung Cấp": "Công ty TNHH Kỹ Thuật Điện", "Người Thực Hiện": "Trịnh Văn HÙNG", "Ghi Chú": "Nhập kho định kỳ" }
             ];
-            const ws = XLSX.utils.aoa_to_sheet(data);
+            const ws = XLSX.utils.json_to_sheet(templateData);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Mau_Nhap_Kho");
-            XLSX.writeFile(wb, "Mau_Nhap_Kho_Ky_Thuat.xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "MauNhapKho");
+            XLSX.writeFile(wb, "Mau_Nhap_Kho_Vat_Tu.xlsx");
+            showToast("Đã tải xuống file mẫu Excel nhập kho!");
         }
 
         async function importWarehouseExcel(e) {
@@ -1635,87 +1663,102 @@
             if (!file) return;
 
             const reader = new FileReader();
-            reader.onload = async (evt) => {
+            reader.onload = async function(e) {
                 try {
-                    const data = new Uint8Array(evt.target.result);
+                    const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
-                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(firstSheet);
 
-                    if (json.length < 2) {
-                        showToast("File Excel không đúng định dạng hoặc rỗng!", "error");
+                    if (rows.length === 0) {
+                        showToast("File Excel không có dữ liệu!", "error");
                         return;
                     }
 
-                    let successCount = 0;
-                    for (let i = 1; i < json.length; i++) {
-                        const row = json[i];
-                        if (!row || row.length === 0) continue;
-
-                        const code = row[0] ? String(row[0]).trim() : '';
-                        const name = row[1] ? String(row[1]).trim() : '';
-                        const cat = row[2] ? String(row[2]).trim().toUpperCase() : 'ME';
-                        const unit = row[3] ? String(row[3]).trim() : 'Cái';
-                        const qty = parseInt(row[4], 10) || 0;
-                        const price = parseFloat(row[5]) || 0;
-                        const supplier = row[6] ? String(row[6]).trim() : 'Nạp Excel';
-                        const performer = row[7] ? String(row[7]).trim() : 'Cán bộ';
-                        const note = row[8] ? String(row[8]).trim() : 'Nạp Excel hàng loạt';
+                    let count = 0;
+                    for (let row of rows) {
+                        const code = String(row["Mã VT"] || '').trim();
+                        const name = String(row["Tên Vật Tư"] || '').trim();
+                        const category = String(row["Danh Mục"] || 'OTHER').trim();
+                        const unit = String(row["ĐVT"] || 'Cái').trim();
+                        const qty = parseInt(row["Số Lượng Nhập"] || 0);
+                        const price = parseFloat(row["Đơn Giá"] || 0);
+                        const supplier = String(row["Nhà Cung Cấp"] || '').trim();
+                        const performer = String(row["Người Thực Hiện"] || 'Quản lý kho').trim();
+                        const note = String(row["Ghi Chú"] || '').trim();
 
                         if (!name || qty <= 0) continue;
 
-                        let item = inventoryData.find(x => x.code === code || x.name.toLowerCase() === name.toLowerCase());
-                        const batch = db.batch();
+                        const existing = inventoryData.find(i => i.code === code || i.name.toLowerCase() === name.toLowerCase());
 
-                        if (item) {
-                            const itemRef = db.collection("inventory").doc(item.id);
-                            const upd = { quantity: (item.quantity || 0) + qty };
-                            if (price > 0) upd.price = price;
-                            batch.update(itemRef, upd);
+                        if (existing) {
+                            const newQty = (existing.quantity || 0) + qty;
+                            const batch = db.batch();
+                            batch.update(db.collection("inventory").doc(existing.id), { quantity: newQty, price: price > 0 ? price : existing.price });
+                            
+                            const hRef = db.collection("history").doc();
+                            batch.set(hRef, {
+                                type: 'IMPORT',
+                                itemId: existing.id,
+                                itemCode: existing.code,
+                                itemName: existing.name,
+                                qty: qty,
+                                price: price > 0 ? price : existing.price,
+                                partner: supplier || 'Excel Import',
+                                performer: performer,
+                                note: note || 'Nhập hàng loạt từ Excel',
+                                timestamp: new Date().toISOString()
+                            });
+                            await batch.commit();
                         } else {
-                            const itemRef = db.collection("inventory").doc();
-                            const newCode = code || `VT-${Math.floor(100 + Math.random() * 900)}`;
-                            batch.set(itemRef, {
-                                code: newCode,
+                            const newDocRef = db.collection("inventory").doc();
+                            const generatedCode = code || `VT-${Math.floor(100 + Math.random() * 900)}`;
+                            const batch = db.batch();
+                            batch.set(newDocRef, {
+                                code: generatedCode,
                                 name: name,
-                                category: cat,
+                                category: category,
                                 unit: unit,
                                 quantity: qty,
                                 minStock: 5,
                                 price: price,
-                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                                updatedAt: new Date().toISOString()
                             });
-                            item = { id: itemRef.id, code: newCode, name: name };
+
+                            const hRef = db.collection("history").doc();
+                            batch.set(hRef, {
+                                type: 'IMPORT',
+                                itemId: newDocRef.id,
+                                itemCode: generatedCode,
+                                itemName: name,
+                                qty: qty,
+                                price: price,
+                                partner: supplier || 'Excel Import',
+                                performer: performer,
+                                note: note || 'Khởi tạo & nhập mới từ Excel',
+                                timestamp: new Date().toISOString()
+                            });
+                            await batch.commit();
                         }
-
-                        const histRef = db.collection("history").doc();
-                        batch.set(histRef, {
-                            type: 'IMPORT',
-                            itemId: item.id,
-                            itemCode: item.code,
-                            itemName: item.name,
-                            qty: qty,
-                            partner: supplier,
-                            performer: performer,
-                            note: note,
-                            timestamp: new Date().toISOString()
-                        });
-
-                        await batch.commit();
-                        successCount++;
+                        count++;
                     }
 
-                    showToast(`Đã nạp thành công ${successCount} dòng vật tư từ Excel!`);
+                    showToast(`Đã nhập kho thành công ${count} mục từ file Excel!`);
                     e.target.value = '';
                 } catch (err) {
-                    showToast("Lỗi xử lý file Excel: " + err.message, "error");
+                    showToast("Lỗi đọc file Excel: " + err.message, "error");
                 }
             };
             reader.readAsArrayBuffer(file);
         }
 
-        // 9. STOCKTAKE MODULE (AUDIT & EXCEL INTEGRATION)
+        // Stocktake Workflow
         function openStocktakeModal() {
+            if (activeStocktake) {
+                showToast("Đang có một phiên kiểm kê mở!", "error");
+                return;
+            }
+            document.getElementById('stocktake-performer-input').value = '';
             document.getElementById('modal-stocktake').classList.remove('hidden');
         }
 
@@ -1726,31 +1769,31 @@
         async function confirmCreateStocktake() {
             const performer = document.getElementById('stocktake-performer-input').value.trim();
             if (!performer) {
-                showToast("Vui lòng chọn hoặc nhập tên cán bộ kiểm kê!", "error");
+                showToast("Vui lòng chọn hoặc nhập cán bộ thực hiện kiểm kê!", "error");
                 return;
             }
 
+            const itemsSnapshot = inventoryData.map(item => ({
+                itemId: item.id,
+                code: item.code,
+                name: item.name,
+                unit: item.unit || 'Cái',
+                systemQty: item.quantity || 0,
+                actualQty: item.quantity || 0,
+                discrepancy: 0
+            }));
+
+            const stocktakeDoc = {
+                performer: performer,
+                createdAt: new Date().toISOString(),
+                status: 'OPEN',
+                items: itemsSnapshot
+            };
+
             try {
-                const stocktakeItems = inventoryData.map(i => ({
-                    itemId: i.id,
-                    code: i.code || '',
-                    name: i.name || '',
-                    unit: i.unit || 'Cái',
-                    systemQty: i.quantity || 0,
-                    actualQty: i.quantity || 0,
-                    diffQty: 0,
-                    note: ''
-                }));
-
-                await db.collection("stocktakes").add({
-                    performer: performer,
-                    status: 'OPEN',
-                    items: stocktakeItems,
-                    createdAt: new Date().toISOString()
-                });
-
+                await db.collection("stocktakes").add(stocktakeDoc);
                 closeStocktakeModal();
-                showToast("Đã khởi tạo phiếu kiểm kê mới!");
+                showToast("Đã khởi tạo phiếu kiểm kê mới thành công!");
             } catch (err) {
                 showToast("Lỗi tạo phiếu kiểm kê: " + err.message, "error");
             }
@@ -1759,76 +1802,68 @@
         function renderStocktakeUI() {
             const container = document.getElementById('stocktake-container');
             const btnCreate = document.getElementById('btn-create-stocktake');
-            const btnExport = document.getElementById('btn-export-stocktake-excel');
-            const btnImport = document.getElementById('btn-import-stocktake-excel');
+            const btnExportExcel = document.getElementById('btn-export-stocktake-excel');
+            const btnImportExcel = document.getElementById('btn-import-stocktake-excel');
             const btnFinalize = document.getElementById('btn-finalize-stocktake');
 
             if (!activeStocktake) {
+                btnCreate.classList.remove('hidden');
+                btnExportExcel.classList.add('hidden');
+                btnImportExcel.classList.add('hidden');
+                btnFinalize.classList.add('hidden');
                 container.innerHTML = `
-                    <div class="p-8 text-center text-slate-400">
+                    <div class="p-12 text-center text-slate-400">
                         <i class="fa-solid fa-clipboard-list text-4xl mb-3 opacity-30"></i>
-                        <p class="text-sm font-medium">Chưa có phiếu kiểm kê nào đang mở.</p>
-                        <p class="text-xs mt-1">Hãy bấm "Tạo Phiếu Kiểm Kê" để bắt đầu quy trình đối soát.</p>
+                        <p class="text-sm font-medium">Chưa có phiên kiểm kê nào đang mở.</p>
+                        <p class="text-xs mt-1">Bấm "Tạo Phiếu Kiểm Kê" để bắt đầu quy trình đối soát.</p>
                     </div>
                 `;
-                btnCreate.classList.remove('hidden');
-                btnExport.classList.add('hidden');
-                btnImport.classList.add('hidden');
-                btnFinalize.classList.add('hidden');
                 return;
             }
 
             btnCreate.classList.add('hidden');
-            btnExport.classList.remove('hidden');
-            btnImport.classList.remove('hidden');
+            btnExportExcel.classList.remove('hidden');
+            btnImportExcel.classList.remove('hidden');
             btnFinalize.classList.remove('hidden');
 
-            const itemsHtml = activeStocktake.items.map((item, index) => {
-                const diff = (item.actualQty || 0) - (item.systemQty || 0);
-                let diffBadge = `<span class="text-slate-400 font-bold">0</span>`;
-                if (diff > 0) diffBadge = `<span class="text-ios-green font-bold">+${diff}</span>`;
-                else if (diff < 0) diffBadge = `<span class="text-ios-red font-bold">${diff}</span>`;
-
-                return `
-                    <tr class="hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors text-xs">
-                        <td class="px-4 py-3 font-mono font-bold text-slate-700 dark:text-slate-300">${item.code}</td>
-                        <td class="px-4 py-3 font-semibold text-slate-800 dark:text-slate-200">${item.name}</td>
-                        <td class="px-4 py-3 text-center text-slate-500">${item.unit}</td>
-                        <td class="px-4 py-3 text-right font-bold text-slate-700 dark:text-slate-300">${item.systemQty}</td>
-                        <td class="px-4 py-3 text-right">
-                            <input type="number" value="${item.actualQty}" onchange="updateStocktakeQty(${index}, this.value)" class="w-20 text-right font-bold px-2 py-1 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-ios-purple outline-none">
-                        </td>
-                        <td class="px-4 py-3 text-center">${diffBadge}</td>
-                        <td class="px-4 py-3">
-                            <input type="text" value="${item.note || ''}" placeholder="Ghi chú..." onchange="updateStocktakeNote(${index}, this.value)" class="w-full text-xs px-2.5 py-1 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-ios-purple outline-none">
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-
             container.innerHTML = `
-                <div class="p-4 bg-ios-purple/10 border-b border-ios-purple/20 flex items-center justify-between">
-                    <div>
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-ios-purple bg-ios-purple/20 px-2 py-0.5 rounded-full">Phiếu đang mở</span>
-                        <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100 mt-1">Cán bộ phụ trách: ${activeStocktake.performer}</h3>
-                        <p class="text-[11px] text-slate-500">Khởi tạo lúc: ${new Date(activeStocktake.createdAt).toLocaleString()}</p>
+                <div class="p-4 bg-purple-500/10 border-b border-purple-500/20 flex flex-col sm:flex-row items-center justify-between text-xs gap-2">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-ios-purple animate-ping"></span>
+                        <span class="font-bold text-slate-900 dark:text-white">Phiên kiểm kê đang thực hiện bởi: <span class="text-ios-purple">${activeStocktake.performer}</span></span>
                     </div>
+                    <span class="text-slate-500">Khởi tạo: ${new Date(activeStocktake.createdAt).toLocaleString()}</span>
                 </div>
                 <div class="overflow-x-auto max-h-[500px] custom-scrollbar">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-100/80 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 text-[11px] uppercase font-bold sticky top-0 z-10 border-b border-slate-200/50 backdrop-blur-md">
+                        <thead class="bg-slate-100/80 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 text-[11px] uppercase font-bold sticky top-0 z-10 border-b border-slate-200/50">
                             <tr>
-                                <th class="px-4 py-3">Mã VT</th>
-                                <th class="px-4 py-3">Tên Vật Tư</th>
-                                <th class="px-4 py-3 text-center">ĐVT</th>
-                                <th class="px-4 py-3 text-right">Tồn Sổ Sách</th>
-                                <th class="px-4 py-3 text-right">Thực Tế Kiểm</th>
-                                <th class="px-4 py-3 text-center">Chênh Lệch</th>
-                                <th class="px-4 py-3">Ghi Chú Kiểm Kê</th>
+                                <th class="px-5 py-3.5">Mã VT</th>
+                                <th class="px-5 py-3.5">Tên Vật Tư</th>
+                                <th class="px-5 py-3.5 text-center">Tồn Sổ Sách</th>
+                                <th class="px-5 py-3.5 text-center">Kiểm Đếm Thực Tế</th>
+                                <th class="px-5 py-3.5 text-center">Chênh Lệch</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200/40 dark:divide-slate-800">
-                            ${itemsHtml}
+                            ${activeStocktake.items.map((it, idx) => {
+                                const diff = it.actualQty - it.systemQty;
+                                let diffBadge = `<span class="text-slate-500 font-semibold">0</span>`;
+                                if (diff > 0) diffBadge = `<span class="text-ios-green font-bold">+${diff}</span>`;
+                                else if (diff < 0) diffBadge = `<span class="text-ios-red font-bold">${diff}</span>`;
+
+                                return `
+                                    <tr class="hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors text-xs">
+                                        <td class="px-5 py-3 font-mono font-bold text-slate-700 dark:text-slate-300">${it.code}</td>
+                                        <td class="px-5 py-3 font-semibold text-slate-900 dark:text-slate-100">${it.name}</td>
+                                        <td class="px-5 py-3 text-center font-bold text-slate-700 dark:text-slate-300">${it.systemQty} ${it.unit}</td>
+                                        <td class="px-5 py-3 text-center">
+                                            <input type="number" min="0" value="${it.actualQty}" onchange="updateStocktakeQty(${idx}, this.value)" class="w-24 text-center py-1.5 px-2 bg-slate-100 dark:bg-slate-800 font-bold rounded-xl border border-slate-300 dark:border-slate-700 outline-none focus:ring-2 focus:ring-ios-purple shadow-inner">
+                                        </td>
+                                        <td class="px-5 py-3 text-center">${diffBadge}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
                         </tbody>
                     </table>
                 </div>
@@ -1837,18 +1872,10 @@
 
         async function updateStocktakeQty(index, val) {
             if (!activeStocktake) return;
-            const actual = parseInt(val, 10) || 0;
-            activeStocktake.items[index].actualQty = actual;
-            activeStocktake.items[index].diffQty = actual - activeStocktake.items[index].systemQty;
+            const newQty = parseInt(val) || 0;
+            activeStocktake.items[index].actualQty = newQty;
+            activeStocktake.items[index].discrepancy = newQty - activeStocktake.items[index].systemQty;
 
-            await db.collection("stocktakes").doc(activeStocktake.id).update({
-                items: activeStocktake.items
-            });
-        }
-
-        async function updateStocktakeNote(index, val) {
-            if (!activeStocktake) return;
-            activeStocktake.items[index].note = val.trim();
             await db.collection("stocktakes").doc(activeStocktake.id).update({
                 items: activeStocktake.items
             });
@@ -1856,139 +1883,127 @@
 
         function exportStocktakeTemplateExcel() {
             if (!activeStocktake) return;
-            const data = [
-                ["Mã VT", "Tên Vật Tư", "Đơn Vị Tính", "Tồn Sổ Sách", "Thực Tế Kiểm Kê", "Ghi Chú"],
-                ...activeStocktake.items.map(i => [i.code, i.name, i.unit, i.systemQty, i.actualQty, i.note || ''])
-            ];
-            const ws = XLSX.utils.aoa_to_sheet(data);
+            const data = activeStocktake.items.map(it => ({
+                "Mã VT": it.code,
+                "Tên Vật Tư": it.name,
+                "ĐVT": it.unit,
+                "Tồn Sổ Sách": it.systemQty,
+                "Thực Tế Kiểm Đếm": it.actualQty
+            }));
+            const ws = XLSX.utils.json_to_sheet(data);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Kiem_Ke_Kho");
-            XLSX.writeFile(wb, `Phieu_Kiem_Ke_${activeStocktake.performer.replace(/\s+/g, '_')}.xlsx`);
+            XLSX.utils.book_append_sheet(wb, ws, "KiemKeKho");
+            XLSX.writeFile(wb, `Phieu_Kiem_Ke_${new Date().toISOString().slice(0,10)}.xlsx`);
+            showToast("Đã xuất file Excel kiểm kê thành công!");
         }
 
         async function importStocktakeExcel(e) {
-            if (!activeStocktake) return;
             const file = e.target.files[0];
-            if (!file) return;
+            if (!file || !activeStocktake) return;
 
             const reader = new FileReader();
-            reader.onload = async (evt) => {
+            reader.onload = async function(e) {
                 try {
-                    const data = new Uint8Array(evt.target.result);
+                    const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
-                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                    const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
 
-                    if (json.length < 2) {
-                        showToast("File Excel rỗng!", "error");
-                        return;
-                    }
-
-                    let updateCount = 0;
-                    for (let i = 1; i < json.length; i++) {
-                        const row = json[i];
-                        if (!row || row.length === 0) continue;
-
-                        const code = row[0] ? String(row[0]).trim() : '';
-                        const actualQty = parseInt(row[4], 10);
-                        const note = row[5] ? String(row[5]).trim() : '';
-
-                        if (!code || isNaN(actualQty)) continue;
-
-                        const itemIdx = activeStocktake.items.findIndex(x => x.code === code);
-                        if (itemIdx !== -1) {
-                            activeStocktake.items[itemIdx].actualQty = actualQty;
-                            activeStocktake.items[itemIdx].diffQty = actualQty - activeStocktake.items[itemIdx].systemQty;
-                            if (note) activeStocktake.items[itemIdx].note = note;
-                            updateCount++;
+                    let updatedCount = 0;
+                    rows.forEach(row => {
+                        const code = String(row["Mã VT"] || '').trim();
+                        const actual = parseInt(row["Thực Tế Kiểm Đếm"]);
+                        if (code && !isNaN(actual)) {
+                            const found = activeStocktake.items.find(i => i.code === code);
+                            if (found) {
+                                found.actualQty = actual;
+                                found.discrepancy = actual - found.systemQty;
+                                updatedCount++;
+                            }
                         }
-                    }
+                    });
 
                     await db.collection("stocktakes").doc(activeStocktake.id).update({
                         items: activeStocktake.items
                     });
 
-                    showToast(`Đã cập nhật số liệu kiểm kê cho ${updateCount} vật tư!`);
+                    renderStocktakeUI();
+                    showToast(`Đã cập nhật ${updatedCount} mục kiểm đếm từ Excel!`);
                     e.target.value = '';
                 } catch (err) {
-                    showToast("Lỗi nạp file kiểm kê: " + err.message, "error");
+                    showToast("Lỗi đọc file Excel kiểm kê: " + err.message, "error");
                 }
             };
             reader.readAsArrayBuffer(file);
         }
 
         async function finalizeStocktake() {
-            if (!activeStocktake) return;
-            if (!confirm("Bạn có chắc chắn muốn CHỐT kiểm kê? Dữ liệu tồn kho trên hệ thống sẽ được tự động điều chỉnh theo số thực tế.")) return;
+            if (!activeStocktake || !confirm("Bạn có chắc chắn muốn chốt và đồng bộ số liệu kiểm kê thực tế vào kho?")) return;
+
+            const batch = db.batch();
+            const now = new Date().toISOString();
+
+            for (let it of activeStocktake.items) {
+                const diff = it.actualQty - it.systemQty;
+                if (diff !== 0) {
+                    const itemRef = db.collection("inventory").doc(it.itemId);
+                    batch.update(itemRef, { quantity: it.actualQty, updatedAt: now });
+
+                    const hRef = db.collection("history").doc();
+                    batch.set(hRef, {
+                        type: 'ADJUST',
+                        itemId: it.itemId,
+                        itemCode: it.code,
+                        itemName: it.name,
+                        qty: Math.abs(diff),
+                        partner: diff > 0 ? 'Kiểm kê thừa' : 'Kiểm kê thiếu',
+                        performer: activeStocktake.performer,
+                        note: `Chốt kiểm kê kho. Chênh lệch: ${diff > 0 ? '+' + diff : diff}`,
+                        timestamp: now
+                    });
+                }
+            }
+
+            const stRef = db.collection("stocktakes").doc(activeStocktake.id);
+            batch.update(stRef, { status: 'CLOSED', closedAt: now });
 
             try {
-                const batch = db.batch();
-
-                for (const item of activeStocktake.items) {
-                    if (item.diffQty !== 0) {
-                        const itemRef = db.collection("inventory").doc(item.itemId);
-                        batch.update(itemRef, { quantity: item.actualQty });
-
-                        const histRef = db.collection("history").doc();
-                        batch.set(histRef, {
-                            type: 'ADJUST',
-                            itemId: item.itemId,
-                            itemCode: item.code,
-                            itemName: item.name,
-                            qty: Math.abs(item.diffQty),
-                            partner: 'Kiểm kê kho',
-                            performer: activeStocktake.performer,
-                            note: `Điều chỉnh kiểm kê (${item.diffQty > 0 ? '+' : ''}${item.diffQty}). ${item.note || ''}`,
-                            timestamp: new Date().toISOString()
-                        });
-                    }
-                }
-
-                const stocktakeRef = db.collection("stocktakes").doc(activeStocktake.id);
-                batch.update(stocktakeRef, {
-                    status: 'CLOSED',
-                    closedAt: new Date().toISOString()
-                });
-
                 await batch.commit();
-                showToast("Đã chốt kiểm kê & đồng bộ tồn kho thành công!");
+                showToast("Đã chốt và đồng bộ tồn kho thành công!");
             } catch (err) {
-                showToast("Lỗi khi chốt kiểm kê: " + err.message, "error");
+                showToast("Lỗi chốt kiểm kê: " + err.message, "error");
             }
         }
 
-        // 10. HISTORY & TRACE MODULES
+        // History Render
         function renderHistoryTable() {
             const tbody = document.getElementById('history-tbody');
             const search = document.getElementById('history-search')?.value.toLowerCase().trim() || '';
             const typeFilter = document.getElementById('history-type-filter')?.value || 'ALL';
 
             const filtered = historyData.filter(h => {
-                const matchSearch = (h.itemName || '').toLowerCase().includes(search) || 
-                                    (h.itemCode || '').toLowerCase().includes(search) || 
-                                    (h.performer || '').toLowerCase().includes(search);
+                const matchSearch = (h.itemName || '').toLowerCase().includes(search) || (h.itemCode || '').toLowerCase().includes(search) || (h.performer || '').toLowerCase().includes(search);
                 const matchType = typeFilter === 'ALL' || h.type === typeFilter;
                 return matchSearch && matchType;
             });
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="px-5 py-8 text-center text-slate-400 italic">Không có nhật ký giao dịch nào.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="px-5 py-8 text-center text-slate-400 italic">Không có lịch sử giao dịch phù hợp.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = filtered.map(h => {
-                let badge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-ios-green/10 text-ios-green">Nhập Kho</span>`;
-                if (h.type === 'EXPORT') badge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold theme-badge-bg theme-text-primary">Xuất Kho</span>`;
-                else if (h.type === 'ADJUST') badge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-ios-purple/10 text-ios-purple">Kiểm Kê</span>`;
+                let badge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-ios-green/10 text-ios-green">Nhập kho</span>`;
+                if (h.type === 'EXPORT') badge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold theme-badge-bg theme-text-primary">Xuất kho</span>`;
+                else if (h.type === 'ADJUST') badge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-ios-purple/10 text-ios-purple">Kiểm kê</span>`;
 
                 return `
                     <tr class="hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors text-xs">
-                        <td class="px-5 py-3.5 text-slate-500">${h.timestamp ? new Date(h.timestamp).toLocaleString() : '-'}</td>
+                        <td class="px-5 py-3.5 font-medium text-slate-500">${h.timestamp ? new Date(h.timestamp).toLocaleString() : '-'}</td>
                         <td class="px-5 py-3.5">${badge}</td>
                         <td class="px-5 py-3.5 font-mono font-bold text-slate-700 dark:text-slate-300">${h.itemCode || '-'}</td>
-                        <td class="px-5 py-3.5 font-semibold text-slate-800 dark:text-slate-200">${h.itemName || '-'}</td>
-                        <td class="px-5 py-3.5 text-right font-bold text-slate-900 dark:text-slate-100">${h.qty}</td>
-                        <td class="px-5 py-3.5 text-slate-600 dark:text-slate-400">${h.partner || '-'}</td>
+                        <td class="px-5 py-3.5 font-semibold text-slate-900 dark:text-slate-100">${h.itemName || '-'}</td>
+                        <td class="px-5 py-3.5 text-right font-bold text-slate-900 dark:text-slate-100">${h.qty || 0}</td>
+                        <td class="px-5 py-3.5 text-slate-700 dark:text-slate-300">${h.partner || '-'}</td>
                         <td class="px-5 py-3.5 font-semibold text-slate-800 dark:text-slate-200">${h.performer || '-'}</td>
                         <td class="px-5 py-3.5 text-slate-500 italic">${h.note || '-'}</td>
                     </tr>
@@ -1996,130 +2011,179 @@
             }).join('');
         }
 
+        // Trace / Lookup View
         function handleTraceModeChange() {
             const mode = document.getElementById('trace-mode').value;
             const targetSelect = document.getElementById('trace-target-select');
-            const label = document.getElementById('trace-target-label');
+            const targetLabel = document.getElementById('trace-target-label');
 
-            targetSelect.innerHTML = `<option value="">-- Chọn đối tượng --</option>`;
+            targetSelect.innerHTML = '';
 
             if (mode === 'item') {
-                label.innerText = 'Chọn Vật Tư Kỹ Thuật';
+                targetLabel.innerText = 'Chọn Vật tư kỹ thuật cần truy xuất';
                 inventoryData.forEach(i => {
-                    targetSelect.innerHTML += `<option value="${i.id}">${i.code} - ${i.name}</option>`;
+                    const opt = document.createElement('option');
+                    opt.value = i.id;
+                    opt.innerText = `[${i.code}] ${i.name} (Tồn: ${i.quantity || 0})`;
+                    targetSelect.appendChild(opt);
                 });
             } else {
-                label.innerText = 'Chọn Nhân Sự Thực Hiện';
-                const performers = [...new Set(historyData.map(h => h.performer).filter(Boolean))];
-                performers.forEach(p => {
-                    targetSelect.innerHTML += `<option value="${p}">${p}</option>`;
+                targetLabel.innerText = 'Chọn Người thực hiện giao dịch';
+                EMPLOYEE_LIST.forEach(emp => {
+                    const opt = document.createElement('option');
+                    opt.value = emp;
+                    opt.innerText = emp;
+                    targetSelect.appendChild(opt);
                 });
             }
+            executeTrace();
         }
 
         function executeTrace() {
             const mode = document.getElementById('trace-mode').value;
-            const val = document.getElementById('trace-target-select').value;
+            const targetVal = document.getElementById('trace-target-select').value;
             const summaryCard = document.getElementById('trace-summary-card');
             const tbody = document.getElementById('trace-table-body');
 
-            if (!val) {
+            if (!targetVal) {
                 summaryCard.classList.add('hidden');
-                tbody.innerHTML = `<tr><td colspan="7" class="px-5 py-8 text-center text-slate-400 italic">Vui lòng chọn đối tượng để xem nhật ký.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="px-5 py-8 text-center text-slate-400 italic">Vui lòng chọn đối tượng để truy xuất.</td></tr>`;
                 return;
             }
+
+            let filtered = [];
+            let title = '';
+            let subtitle = '';
 
             if (mode === 'item') {
-                const item = inventoryData.find(i => i.id === val);
-                currentTraceResults = historyData.filter(h => h.itemId === val);
-
-                document.getElementById('trace-summary-badge').innerText = 'VẬT TƯ KỸ THUẬT';
-                document.getElementById('trace-summary-title').innerText = `${item ? item.code : ''} - ${item ? item.name : ''}`;
-                document.getElementById('trace-summary-subtitle').innerText = `Tồn kho hiện tại: ${item ? item.quantity : 0} ${item ? item.unit : 'Cái'} | Đơn giá: ${(item ? item.price : 0).toLocaleString()} ₫`;
-
-                const imports = currentTraceResults.filter(h => h.type === 'IMPORT').reduce((a, b) => a + b.qty, 0);
-                const exports = currentTraceResults.filter(h => h.type === 'EXPORT').reduce((a, b) => a + b.qty, 0);
-
-                document.getElementById('trace-stat-total').innerText = currentTraceResults.length;
-                document.getElementById('trace-stat-imports').innerText = imports;
-                document.getElementById('trace-stat-exports').innerText = exports;
-                document.getElementById('trace-stat-4-label').innerText = 'Tổng luân chuyển:';
-                document.getElementById('trace-stat-4-val').innerText = imports + exports;
+                const item = inventoryData.find(i => i.id === targetVal);
+                if (!item) return;
+                filtered = historyData.filter(h => h.itemId === targetVal);
+                title = `Vật tư: ${item.name} (${item.code})`;
+                subtitle = `Danh mục: ${item.category} | Hiện tồn: ${item.quantity || 0} ${item.unit || 'Cái'}`;
             } else {
-                currentTraceResults = historyData.filter(h => h.performer === val);
-
-                document.getElementById('trace-summary-badge').innerText = 'NHÂN SỰ THỰC HIỆN';
-                document.getElementById('trace-summary-title').innerText = val;
-                document.getElementById('trace-summary-subtitle').innerText = `Cán bộ quản lý kho / thực hiện thao tác`;
-
-                const importCount = currentTraceResults.filter(h => h.type === 'IMPORT').length;
-                const exportCount = currentTraceResults.filter(h => h.type === 'EXPORT').length;
-
-                document.getElementById('trace-stat-total').innerText = currentTraceResults.length;
-                document.getElementById('trace-stat-imports').innerText = importCount;
-                document.getElementById('trace-stat-exports').innerText = exportCount;
-                document.getElementById('trace-stat-4-label').innerText = 'Tỷ lệ Xuất/Nhập:';
-                document.getElementById('trace-stat-4-val').innerText = `${exportCount}/${importCount}`;
+                filtered = historyData.filter(h => h.performer === targetVal);
+                title = `Nhân sự thực hiện: ${targetVal}`;
+                subtitle = `Tổng số giao dịch ghi nhận trong hệ thống`;
             }
 
+            currentTraceResults = filtered;
             summaryCard.classList.remove('hidden');
+            document.getElementById('trace-summary-title').innerText = title;
+            document.getElementById('trace-summary-subtitle').innerText = subtitle;
 
-            if (currentTraceResults.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="px-5 py-8 text-center text-slate-400 italic">Chưa ghi nhận giao dịch nào cho đối tượng này.</td></tr>`;
+            const totalCount = filtered.length;
+            const imports = filtered.filter(h => h.type === 'IMPORT').length;
+            const exports = filtered.filter(h => h.type === 'EXPORT').length;
+            const totalQty = filtered.reduce((acc, h) => acc + (h.qty || 0), 0);
+
+            document.getElementById('trace-stat-total').innerText = totalCount;
+            document.getElementById('trace-stat-imports').innerText = imports;
+            document.getElementById('trace-stat-exports').innerText = exports;
+            document.getElementById('trace-stat-4-val').innerText = totalQty.toLocaleString();
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="px-5 py-8 text-center text-slate-400 italic">Không tìm thấy giao dịch nào cho đối tượng này.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = currentTraceResults.map(h => `
-                <tr class="hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors text-xs">
-                    <td class="px-5 py-3.5 text-slate-500">${h.timestamp ? new Date(h.timestamp).toLocaleString() : '-'}</td>
-                    <td class="px-5 py-3.5">
-                        ${h.type === 'IMPORT' 
-                            ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-ios-green/10 text-ios-green">Nhập</span>` 
-                            : h.type === 'EXPORT'
-                            ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold theme-badge-bg theme-text-primary">Xuất</span>`
-                            : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-ios-purple/10 text-ios-purple">Kiểm kê</span>`}
-                    </td>
-                    <td class="px-5 py-3.5 font-semibold text-slate-800 dark:text-slate-200">${h.itemCode} - ${h.itemName}</td>
-                    <td class="px-5 py-3.5 text-right font-bold text-slate-900 dark:text-slate-100">${h.qty}</td>
-                    <td class="px-5 py-3.5 text-slate-600 dark:text-slate-400">${h.partner || '-'}</td>
-                    <td class="px-5 py-3.5 font-semibold text-slate-800 dark:text-slate-200">${h.performer || '-'}</td>
-                    <td class="px-5 py-3.5 text-slate-500 italic">${h.note || '-'}</td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = filtered.map(h => {
+                let badge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-ios-green/10 text-ios-green">Nhập kho</span>`;
+                if (h.type === 'EXPORT') badge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold theme-badge-bg theme-text-primary">Xuất kho</span>`;
+                else if (h.type === 'ADJUST') badge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-ios-purple/10 text-ios-purple">Kiểm kê</span>`;
+
+                return `
+                    <tr class="hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors text-xs">
+                        <td class="px-5 py-3.5 font-medium text-slate-500">${h.timestamp ? new Date(h.timestamp).toLocaleString() : '-'}</td>
+                        <td class="px-5 py-3.5">${badge}</td>
+                        <td class="px-5 py-3.5 font-semibold text-slate-900 dark:text-slate-100">${h.itemName || '-'} <span class="font-mono text-xs text-slate-400">(${h.itemCode || ''})</span></td>
+                        <td class="px-5 py-3.5 text-right font-bold text-slate-900 dark:text-slate-100">${h.qty || 0}</td>
+                        <td class="px-5 py-3.5 text-slate-700 dark:text-slate-300">${h.partner || '-'}</td>
+                        <td class="px-5 py-3.5 font-semibold text-slate-800 dark:text-slate-200">${h.performer || '-'}</td>
+                        <td class="px-5 py-3.5 text-slate-500 italic">${h.note || '-'}</td>
+                    </tr>
+                `;
+            }).join('');
         }
 
-        // 11. GENERAL EXPORT CSV UTILITY
+        // CSV Export Function
         function exportToCSV(type) {
-            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-            let fileName = "bao_cao.csv";
+            let dataToExport = [];
+            let filename = 'bao_cao_kho.csv';
 
             if (type === 'inventory') {
-                fileName = "Danh_Sach_Vat_Tu_Kho.csv";
-                csvContent += "Mã VT,Tên Vật Tư,Danh Mục,Đơn Vị Tính,Tồn Kho,Đơn Giá,Giá Trị Tồn\n";
-                inventoryData.forEach(i => {
-                    csvContent += `"${i.code || ''}","${i.name || ''}","${i.category || ''}","${i.unit || ''}",${i.quantity || 0},${i.price || 0},${(i.quantity || 0) * (i.price || 0)}\n`;
-                });
+                dataToExport = inventoryData.map(i => ({
+                    "Mã VT": i.code,
+                    "Tên Vật Tư": i.name,
+                    "Danh Mục": i.category,
+                    "ĐVT": i.unit,
+                    "Tồn Kho": i.quantity,
+                    "Đơn Giá": i.price,
+                    "Tối Thiểu": i.minStock
+                }));
+                filename = 'Danh_Sach_Vat_Tu.csv';
             } else if (type === 'history') {
-                fileName = "Lich_Su_Giao_Dich.csv";
-                csvContent += "Thời Gian,Loại GD,Mã VT,Tên Vật Tư,Số Lượng,Đối Tác / Bộ Phận,Người Thực Hiện,Ghi Chú\n";
-                historyData.forEach(h => {
-                    csvContent += `"${h.timestamp || ''}","${h.type || ''}","${h.itemCode || ''}","${h.itemName || ''}",${h.qty || 0},"${h.partner || ''}","${h.performer || ''}","${h.note || ''}"\n`;
-                });
+                dataToExport = historyData.map(h => ({
+                    "Thời Gian": h.timestamp ? new Date(h.timestamp).toLocaleString() : '',
+                    "Loại Giao Dịch": h.type,
+                    "Mã VT": h.itemCode,
+                    "Tên Vật Tư": h.itemName,
+                    "Số Lượng": h.qty,
+                    "Đối Tác": h.partner,
+                    "Người Thực Hiện": h.performer,
+                    "Ghi Chú": h.note
+                }));
+                filename = 'Lich_Su_Giao_Dich.csv';
             } else if (type === 'trace') {
-                fileName = "Truy_Xuat_Giao_Dich.csv";
-                csvContent += "Thời Gian,Loại GD,Mã VT,Tên Vật Tư,Số Lượng,Đối Tác / Bộ Phận,Người Thực Hiện,Ghi Chú\n";
-                currentTraceResults.forEach(h => {
-                    csvContent += `"${h.timestamp || ''}","${h.type || ''}","${h.itemCode || ''}","${h.itemName || ''}",${h.qty || 0},"${h.partner || ''}","${h.performer || ''}","${h.note || ''}"\n`;
-                });
+                dataToExport = currentTraceResults.map(h => ({
+                    "Thời Gian": h.timestamp ? new Date(h.timestamp).toLocaleString() : '',
+                    "Loại Giao Dịch": h.type,
+                    "Mã VT": h.itemCode,
+                    "Tên Vật Tư": h.itemName,
+                    "Số Lượng": h.qty,
+                    "Đối Tác": h.partner,
+                    "Người Thực Hiện": h.performer,
+                    "Ghi Chú": h.note
+                }));
+                filename = 'Truy_Xuat_Giao_Dich.csv';
             }
 
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", fileName);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            if (dataToExport.length === 0) {
+                showToast("Không có dữ liệu để xuất CSV!", "error");
+                return;
+            }
+
+            const ws = XLSX.utils.json_to_sheet(dataToExport);
+            const csvOutput = XLSX.utils.sheet_to_csv(ws);
+            const blob = new Blob(["\uFEFF" + csvOutput], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast("Đã xuất file CSV thành công!");
+        }
+
+        // Close dropdowns on outside click
+        function setupOutsideClicks() {
+            window.addEventListener('click', (e) => {
+                if (!e.target.closest('#import-search') && !e.target.closest('#import-dropdown')) {
+                    document.getElementById('import-dropdown')?.classList.add('hidden');
+                }
+                if (!e.target.closest('#export-search') && !e.target.closest('#export-dropdown')) {
+                    document.getElementById('export-dropdown')?.classList.add('hidden');
+                }
+                if (!e.target.closest('#import-performer') && !e.target.closest('#import-performer-dropdown')) {
+                    document.getElementById('import-performer-dropdown')?.classList.add('hidden');
+                }
+                if (!e.target.closest('#export-performer') && !e.target.closest('#export-performer-dropdown')) {
+                    document.getElementById('export-performer-dropdown')?.classList.add('hidden');
+                }
+                if (!e.target.closest('#stocktake-performer-input') && !e.target.closest('#stocktake-performer-input-dropdown')) {
+                    document.getElementById('stocktake-performer-input-dropdown')?.classList.add('hidden');
+                }
+            });
         }
     </script>
 </body>
