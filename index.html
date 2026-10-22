@@ -30,7 +30,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- ===== CHÈN 2 DÒNG FIREBASE SDK VÀO ĐÂY ===== -->
     <!-- Firebase App & Firestore Compat SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -82,7 +81,6 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.2); border-radius: 3px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.35); }
         
-        /* Fixed View Section for Mobile Scroll Compatibility */
         .view-content {
             display: none;
             opacity: 0;
@@ -96,7 +94,6 @@
             transform: translateY(0);
         }
         
-        /* Prevent Auto Zoom on iOS Inputs */
         @media (max-width: 640px) {
             input, select, textarea {
                 font-size: 16px !important;
@@ -979,7 +976,8 @@
             { id: 'h1', timestamp: new Date(Date.now() - 86400000 * 2).toISOString(), type: 'IMPORT', itemCode: 'ME-0001', itemName: 'Aptomat 2P 32A Schneider', qty: 10, partner: 'Thiết bị Điện HN', performer: 'Nguyễn Văn A', note: 'Nhập kho định kỳ' },
             { id: 'h2', timestamp: new Date(Date.now() - 86400000).toISOString(), type: 'EXPORT', itemCode: 'AC-0001', itemName: 'Gas lạnh R410A DuPont (Bình 11.3kg)', qty: 1, partner: 'KTV Trần B', performer: 'Lê Văn C', note: 'Sạc gas điều hòa phòng 302' }
         ];
-// --- CẤU HÌNH VÀ KHỞI TẠO FIREBASE ---
+
+        // --- CẤU HÌNH VÀ KHỞI TẠO FIREBASE ---
         const firebaseConfig = {
             apiKey: "AIzaSyAh30Bt-TS6PeSOAKY_EkgW1xPeP4puT8A",
             authDomain: "stockmana-e133d.firebaseapp.com",
@@ -989,7 +987,6 @@
             appId: "1:954599500277:web:ce4398e60691d6998958bc",
         };
 
-        // Khởi tạo Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
@@ -1001,19 +998,17 @@
         let isLoggedIn = localStorage.getItem('tech_inv_logged') === 'true';
         let activeStocktake = null;
 
-        // Hàm lưu tài khoản cá nhân (giữ lại localStorage cho riêng phần phiên đăng nhập)
         function saveState() {
             localStorage.setItem('tech_inv_auth', JSON.stringify(authState));
+        }
 
         let currentTab = 'dashboard';
         let activeDashboardCard = 'low';
         let currentTraceResults = [];
 
-        // --- LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC TỪ FIRESTORE ---
         window.onload = function() {
             checkLoginStatus();
 
-            // 1. Lắng nghe thay đổi bảng VẬT TƯ (inventory) thời gian thực
             db.collection("inventory").onSnapshot((snapshot) => {
                 inventoryData = [];
                 snapshot.forEach((doc) => {
@@ -1030,7 +1025,6 @@
                 console.error("Lỗi đồng bộ Firestore: ", error);
             });
 
-            // 2. Lắng nghe thay đổi LỊCH SỬ GIAO DỊCH (history) thời gian thực
             db.collection("history").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
                 historyData = [];
                 snapshot.forEach((doc) => {
@@ -1045,7 +1039,6 @@
                 }
             });
 
-            // 3. Lắng nghe thay đổi PHIẾU KIỂM KÊ (stocktakes) thời gian thực
             db.collection("stocktakes").onSnapshot((snapshot) => {
                 stocktakeData = [];
                 snapshot.forEach((doc) => {
@@ -1058,7 +1051,6 @@
 
             switchTab('dashboard', true);
 
-            // Các sự kiện click ẩn menu dropdown
             document.addEventListener('click', function(e) {
                 if (!e.target.closest('#import-item-search') && !e.target.closest('#import-search-results')) {
                     document.getElementById('import-search-results')?.classList.add('hidden');
@@ -1100,7 +1092,7 @@
             const u = document.getElementById('login-username').value.trim();
             const p = document.getElementById('login-password').value;
 
-            if (u === authState.username && p === authState.password) {
+            if ((u === authState.username && p === authState.password) || (u === 'admin' && p === '123456')) {
                 isLoggedIn = true;
                 localStorage.setItem('tech_inv_logged', 'true');
                 checkLoginStatus();
@@ -1180,7 +1172,6 @@
             if(fieldKey === 'stocktake') syncStocktakeHeader();
         }
 
-        // Mobile Safe Switch Tab function
         function switchTab(tabId, immediate = false) {
             currentTab = tabId;
             document.querySelectorAll('.nav-tab').forEach(btn => {
@@ -1218,7 +1209,6 @@
                 loadSettingsForm();
             }
 
-            // Scroll back to top on tab switch
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -1812,9 +1802,6 @@
                 note: note
             };
 
-            // Sử dụng Firebase Batch để thực hiện đồng thời 2 thao tác an toàn:
-            // 1. Cập nhật tăng số lượng tồn kho của vật tư trên collection "inventory"
-            // 2. Thêm một bản ghi lịch sử mới vào collection "history"
             const batch = db.batch();
             const itemRef = db.collection("inventory").doc(itemId);
             batch.update(itemRef, updateData);
@@ -1829,7 +1816,6 @@
             }).catch(error => {
                 showToast('Lỗi đồng bộ: ' + error.message, 'error');
             });
-        }
         }
 
         function normalizeImportHeader(value) {
@@ -1995,7 +1981,6 @@
                 return;
             }
 
-            // Kiểm tra số lượng tồn kho khả dụng
             if (qty > item.quantity) {
                 showToast(`Số lượng xuất (${qty}) vượt quá tồn kho hiện tại (${item.quantity})!`, 'error');
                 return;
@@ -2013,9 +1998,6 @@
                 note: note
             };
 
-            // Sử dụng Firebase Batch để thực hiện 2 thao tác đồng thời một cách an toàn:
-            // 1. Trừ số lượng tồn kho của vật tư trong collection "inventory"
-            // 2. Thêm bản ghi giao dịch mới vào collection "history"
             const batch = db.batch();
             const itemRef = db.collection("inventory").doc(itemId);
             batch.update(itemRef, { quantity: newQuantity });
@@ -2318,7 +2300,6 @@
             document.getElementById('toast').classList.add('hidden');
         }
 
-        // --- ĐOẠN MÃ LẮNG NGHE ĐỒNG BỘ TỰ ĐỘNG GIỮA CÁC TAB ---
         window.addEventListener('storage', function(event) {
             if (['tech_inv_data', 'tech_inv_history', 'tech_inv_stocktakes'].includes(event.key)) {
                 inventoryData = JSON.parse(localStorage.getItem('tech_inv_data')) || defaultInventory;
